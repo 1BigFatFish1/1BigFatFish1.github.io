@@ -13,7 +13,7 @@
     -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none; -webkit-user-drag: none;
     width: 100%; height: 100%; position: fixed; }
-  canvas { display: block; touch-action: none; width: 100% !important; height: 100% !important; }
+  canvas { display: block; touch-action: none; }
 
   #hud { position: fixed; left: 22px; bottom: 22px; color: #fff; font-family: monospace;
     pointer-events: none; z-index: 10; }
@@ -86,6 +86,7 @@
     border-color: rgba(180, 255, 200, 0.9);
   }
 
+  /* 编辑模式提示 */
   #edit-hint {
     position: fixed;
     top: 12px;
@@ -107,6 +108,7 @@
   }
   body.edit-mode #edit-hint { display: block; }
 
+  /* 重置按钮 */
   #reset-btn {
     position: fixed;
     top: 56px;
@@ -130,6 +132,7 @@
   body.edit-mode #reset-btn { display: block; }
   #reset-btn:active { transform: translateX(-50%) scale(0.95); }
 
+  /* 编辑模式下，可拖动元素发光提示 */
   body.edit-mode #mobile-controls .ctrl-btn,
   body.edit-mode #joystick-base {
     outline: 2px dashed #ffdd44;
@@ -163,9 +166,9 @@
   body.touch-device #mobile-controls { display: block; }
   #mobile-controls > * { pointer-events: auto; }
 
-  /* 竖屏默认布局（按钮样式跟布局完全用 CSS 定位，不用 inline left/top） */
   #joystick-base {
     position: fixed;
+    left: 24px; bottom: 30px;
     width: 150px; height: 150px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(120,180,255,0.12) 0%, rgba(120,180,255,0.04) 70%, transparent 100%);
@@ -198,6 +201,7 @@
   .ctrl-btn.pressed { transform: scale(0.92); background: rgba(90,120,200,0.75); }
 
   #btn-shoot {
+    right: 26px; bottom: 30px;
     width: 105px; height: 105px; font-size: 18px;
     background: radial-gradient(circle at 35% 30%, rgba(255,120,120,0.5), rgba(180,30,30,0.7));
     border-color: rgba(255,140,140,0.8);
@@ -206,66 +210,57 @@
   #btn-shoot.pressed { background: radial-gradient(circle at 35% 30%, rgba(255,160,160,0.8), rgba(220,40,40,0.9)); }
 
   #btn-jump {
+    right: 32px; bottom: 156px;
     background: radial-gradient(circle at 35% 30%, rgba(150,220,255,0.35), rgba(30,90,160,0.7));
     border-color: rgba(160,220,255,0.7);
   }
   #btn-reload {
+    right: 152px; bottom: 32px;
     background: radial-gradient(circle at 35% 30%, rgba(255,220,120,0.35), rgba(150,110,20,0.7));
     border-color: rgba(255,220,120,0.75);
   }
   #btn-grenade {
+    right: 156px; bottom: 156px;
     background: radial-gradient(circle at 35% 30%, rgba(150,255,170,0.35), rgba(30,130,60,0.7));
     border-color: rgba(150,255,170,0.7);
   }
 
-  /* ============================================================
-     竖屏布局（Portrait）
-     ============================================================ */
-  @media (orientation: portrait) {
-    body.touch-device #info { display: none; }
-    body.touch-device #hud { left: 16px; top: 16px; bottom: auto; }
-    body.touch-device #hpbar-bg { width: 170px; height: 16px; }
-    body.touch-device #hptext { font-size: 13px; margin-top: 4px; }
-    body.touch-device #kills { left: 16px; top: 58px; right: auto; font-size: 13px; }
-    body.touch-device #timer { left: 16px; top: 82px; font-size: 11px; }
-    body.touch-device #ammo { right: 16px; top: 16px; bottom: auto; }
-    body.touch-device #mag { font-size: 30px; }
-    body.touch-device #reserve { font-size: 14px; }
-    body.touch-device #reload-hint { font-size: 12px; height: 16px; }
-    body.touch-device #grenade { right: 16px; top: 88px; bottom: auto; font-size: 14px; }
-    body.touch-device #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
-    body.touch-device #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
+  body.touch-device #info { display: none; }
+  body.touch-device #hud { left: 16px; top: 16px; bottom: auto; }
+  body.touch-device #hpbar-bg { width: 170px; height: 16px; }
+  body.touch-device #hptext { font-size: 13px; margin-top: 4px; }
+  body.touch-device #kills { left: 16px; top: 58px; right: auto; font-size: 13px; }
+  body.touch-device #timer { left: 16px; top: 82px; font-size: 11px; }
+  body.touch-device #ammo { right: 16px; top: 16px; bottom: auto; }
+  body.touch-device #mag { font-size: 30px; }
+  body.touch-device #reserve { font-size: 14px; }
+  body.touch-device #reload-hint { font-size: 12px; height: 16px; }
+  body.touch-device #grenade { right: 16px; top: 88px; bottom: auto; font-size: 14px; }
+  body.touch-device #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
+  body.touch-device #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
 
-    body.touch-device #settings-btn {
-      right: max(10px, env(safe-area-inset-right));
-      top: max(110px, calc(env(safe-area-inset-top) + 100px));
-    }
-
-    /* 竖屏默认位置 */
-    body.touch-device #joystick-base {
-      left: max(18px, env(safe-area-inset-left));
-      bottom: max(24px, env(safe-area-inset-bottom));
-    }
-    body.touch-device #btn-shoot {
-      right: max(20px, env(safe-area-inset-right));
-      bottom: max(24px, env(safe-area-inset-bottom));
-    }
-    body.touch-device #btn-jump {
-      right: max(24px, env(safe-area-inset-right));
-      bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
-    }
-    body.touch-device #btn-reload {
-      right: calc(max(20px, env(safe-area-inset-right)) + 122px);
-      bottom: max(24px, env(safe-area-inset-bottom));
-    }
-    body.touch-device #btn-grenade {
-      right: calc(max(20px, env(safe-area-inset-right)) + 126px);
-      bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
-    }
+  body.touch-device #joystick-base {
+    left: max(18px, env(safe-area-inset-left));
+    bottom: max(24px, env(safe-area-inset-bottom));
+  }
+  body.touch-device #btn-shoot {
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(24px, env(safe-area-inset-bottom));
+  }
+  body.touch-device #btn-jump {
+    right: max(24px, env(safe-area-inset-right));
+    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
+  }
+  body.touch-device #btn-reload {
+    right: calc(max(20px, env(safe-area-inset-right)) + 122px);
+    bottom: max(24px, env(safe-area-inset-bottom));
+  }
+  body.touch-device #btn-grenade {
+    right: calc(max(20px, env(safe-area-inset-right)) + 126px);
+    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
   }
 
-  /* 小屏竖屏 */
-  @media (orientation: portrait) and (max-width: 400px) {
+  @media (max-width: 400px) {
     body.touch-device #joystick-base { width: 130px; height: 130px; }
     body.touch-device #joystick-knob { width: 58px; height: 58px; }
     body.touch-device #btn-shoot { width: 92px; height: 92px; font-size: 16px; }
@@ -282,81 +277,30 @@
     }
   }
 
-  /* ============================================================
-     横屏布局（Landscape）—— 核心适配
-     ============================================================ */
-  @media (orientation: landscape) {
-    body.touch-device #info { display: none; }
-
-    /* HUD 紧凑 */
-    body.touch-device #hud { left: 12px; top: 10px; bottom: auto; }
-    body.touch-device #hpbar-bg { width: 130px; height: 12px; }
-    body.touch-device #hptext { font-size: 11px; margin-top: 2px; }
-    body.touch-device #kills { left: 12px; top: 40px; right: auto; font-size: 11px; }
-    body.touch-device #timer { left: 12px; top: 58px; font-size: 10px; }
-    body.touch-device #ammo { right: 12px; top: 10px; bottom: auto; }
-    body.touch-device #mag { font-size: 22px; }
-    body.touch-device #reserve { font-size: 12px; }
-    body.touch-device #reload-hint { font-size: 10px; height: 14px; margin-top: 0; }
-    body.touch-device #grenade { right: 12px; top: 56px; bottom: auto; font-size: 11px; }
-
-    /* 设置按钮右上 */
-    body.touch-device #settings-btn {
-      right: max(10px, env(safe-area-inset-right));
-      top: max(10px, env(safe-area-inset-top));
-      width: 38px;
-      height: 38px;
-      font-size: 18px;
-    }
-
-    #edit-hint { top: 8px; font-size: 11px; padding: 6px 12px; }
-    #reset-btn { top: 40px; font-size: 11px; padding: 6px 16px; }
-
-    /* 摇杆：贴左下 */
+  @media (orientation: landscape) and (max-height: 520px) {
     body.touch-device #joystick-base {
-      width: 116px; height: 116px;
-      left: max(14px, env(safe-area-inset-left));
-      bottom: max(14px, env(safe-area-inset-bottom));
+      width: 118px; height: 118px;
+      left: max(16px, env(safe-area-inset-left));
+      bottom: max(16px, env(safe-area-inset-bottom));
     }
-    body.touch-device #joystick-knob { width: 50px; height: 50px; }
-
-    /* 按钮：贴右下 */
-    body.touch-device .ctrl-btn { width: 58px; height: 58px; font-size: 11px; }
-
+    body.touch-device #joystick-knob { width: 52px; height: 52px; }
     body.touch-device #btn-shoot {
-      width: 82px; height: 82px; font-size: 14px;
-      right: max(14px, env(safe-area-inset-right));
-      bottom: max(14px, env(safe-area-inset-bottom));
-    }
-    body.touch-device #btn-jump {
+      width: 84px; height: 84px; font-size: 15px;
       right: max(16px, env(safe-area-inset-right));
-      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
+      bottom: max(16px, env(safe-area-inset-bottom));
     }
-    body.touch-device #btn-reload {
-      right: calc(max(14px, env(safe-area-inset-right)) + 96px);
-      bottom: max(14px, env(safe-area-inset-bottom));
-    }
-    body.touch-device #btn-grenade {
-      right: calc(max(14px, env(safe-area-inset-right)) + 100px);
-      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
-    }
-  }
-
-  /* 横屏超矮屏 */
-  @media (orientation: landscape) and (max-height: 380px) {
-    body.touch-device #joystick-base { width: 100px; height: 100px; }
-    body.touch-device #joystick-knob { width: 44px; height: 44px; }
-    body.touch-device .ctrl-btn { width: 52px; height: 52px; font-size: 10px; }
-    body.touch-device #btn-shoot { width: 72px; height: 72px; font-size: 13px; }
+    body.touch-device .ctrl-btn { width: 62px; height: 62px; font-size: 11px; }
     body.touch-device #btn-jump {
-      bottom: calc(max(12px, env(safe-area-inset-bottom)) + 80px);
+      right: max(18px, env(safe-area-inset-right));
+      bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px);
     }
     body.touch-device #btn-reload {
-      right: calc(max(12px, env(safe-area-inset-right)) + 84px);
+      right: calc(max(16px, env(safe-area-inset-right)) + 100px);
+      bottom: max(16px, env(safe-area-inset-bottom));
     }
     body.touch-device #btn-grenade {
-      right: calc(max(12px, env(safe-area-inset-right)) + 88px);
-      bottom: calc(max(12px, env(safe-area-inset-bottom)) + 80px);
+      right: calc(max(16px, env(safe-area-inset-right)) + 104px);
+      bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px);
     }
   }
 </style>
@@ -392,6 +336,7 @@
   R 换弹 · G 投掷手榴弹
 </div>
 
+<!-- 设置按钮 -->
 <div id="settings-btn" title="设置">⚙</div>
 <div id="edit-hint">拖动按钮到合适位置，点击 ✓ 保存</div>
 <div id="reset-btn">重置位置</div>
@@ -845,4 +790,1060 @@ function enemyShoot(e) {
 /* =========================================================
    8. 手榴弹 & 爆炸
    ========================================================= */
-const
+const grenadeProjectiles = [];
+const grenadeGeo = new THREE.SphereGeometry(0.13, 8, 6);
+const grenadeMat = new THREE.MeshLambertMaterial({ map: pixelTexture('#3f7a3a') });
+const throwAnim = { active: false, startTime: 0, duration: 0.55, spawned: false };
+
+function spawnGrenadeProjectile() {
+  const start = new THREE.Vector3(0.35, -0.3, -1.0);
+  camera.localToWorld(start);
+  const mesh = new THREE.Mesh(grenadeGeo, grenadeMat);
+  mesh.position.copy(start);
+  scene.add(mesh);
+  const dir = new THREE.Vector3();
+  camera.getWorldDirection(dir);
+  grenadeProjectiles.push({
+    mesh,
+    vel: dir.clone().multiplyScalar(19).add(new THREE.Vector3(0, 3.2, 0)),
+    timer: 2.1,
+    spin: new THREE.Vector3(
+      (Math.random() - 0.5) * 16, (Math.random() - 0.5) * 16, (Math.random() - 0.5) * 16
+    ),
+  });
+}
+function throwGrenade() {
+  if (gameOver) return;
+  if (grenades <= 0) return;
+  if (throwAnim.active) return;
+  grenades--;
+  updateGrenadeUI();
+  throwAnim.active = true;
+  throwAnim.startTime = performance.now() / 1000;
+  throwAnim.spawned = false;
+  throwArm.visible = true;
+  heldGrenade.visible = true;
+  gunGroup.visible = false;
+}
+function updateThrowAnimation(now) {
+  if (!throwAnim.active) return;
+  const t = (now - throwAnim.startTime) / throwAnim.duration;
+  if (t >= 1) {
+    throwAnim.active = false;
+    throwArm.visible = false;
+    heldGrenade.visible = true;
+    gunGroup.visible = true;
+    return;
+  }
+  let x, y, z, rotX;
+  if (t < 0.4) {
+    const p = t / 0.4; const e = 1 - Math.pow(1 - p, 2);
+    x = THREE.MathUtils.lerp(ARM_HIDDEN.x, 0.32, e);
+    y = THREE.MathUtils.lerp(ARM_HIDDEN.y, -0.35, e);
+    z = THREE.MathUtils.lerp(ARM_HIDDEN.z, -0.30, e);
+    rotX = THREE.MathUtils.lerp(0.3, -0.7, e);
+  } else if (t < 0.55) {
+    const p = (t - 0.4) / 0.15; const e = p * p;
+    x = THREE.MathUtils.lerp(0.32, 0.48, e);
+    y = THREE.MathUtils.lerp(-0.35, -0.55, e);
+    z = THREE.MathUtils.lerp(-0.30, -0.85, e);
+    rotX = THREE.MathUtils.lerp(-0.7, 0.6, e);
+    if (!throwAnim.spawned && p > 0.4) {
+      throwAnim.spawned = true;
+      heldGrenade.visible = false;
+      spawnGrenadeProjectile();
+    }
+  } else {
+    const p = (t - 0.55) / 0.45; const e = p * p;
+    x = THREE.MathUtils.lerp(0.48, ARM_HIDDEN.x, e);
+    y = THREE.MathUtils.lerp(-0.55, ARM_HIDDEN.y, e);
+    z = THREE.MathUtils.lerp(-0.85, ARM_HIDDEN.z, e);
+    rotX = THREE.MathUtils.lerp(0.6, 0.3, e);
+  }
+  throwArm.position.set(x, y, z);
+  throwArm.rotation.x = rotX;
+}
+function explode(pos) {
+  const light = new THREE.PointLight(0xffbb44, 22, 30, 2);
+  light.position.copy(pos); scene.add(light);
+  const ballMat = new THREE.MeshBasicMaterial({ color: 0xffdd66, transparent: true, opacity: 1, depthWrite: false });
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), ballMat);
+  ball.position.copy(pos); scene.add(ball);
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, depthWrite: false });
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.6, 10, 8), coreMat);
+  core.position.copy(pos); scene.add(core);
+  const sparks = [];
+  for (let i = 0; i < 26; i++) {
+    const s = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.18, 0.18),
+      new THREE.MeshBasicMaterial({ color: [0xffd166, 0xff8a3d, 0xffef9e][i % 3], transparent: true })
+    );
+    s.position.copy(pos);
+    const d = new THREE.Vector3(
+      Math.random() - 0.5, Math.random() * 0.9 + 0.15, Math.random() - 0.5
+    ).normalize().multiplyScalar(7 + Math.random() * 13);
+    scene.add(s);
+    sparks.push({ mesh: s, vel: d, rot: new THREE.Vector3(Math.random() * 10, Math.random() * 10, Math.random() * 10) });
+  }
+  const t0 = performance.now();
+  const DUR = 750;
+  (function anim() {
+    const t = (performance.now() - t0) / DUR;
+    if (t >= 1) {
+      scene.remove(ball); scene.remove(core); scene.remove(light);
+      ball.geometry.dispose(); core.geometry.dispose();
+      ballMat.dispose(); coreMat.dispose();
+      sparks.forEach(s => { scene.remove(s.mesh); s.mesh.geometry.dispose(); s.mesh.material.dispose(); });
+      return;
+    }
+    const e = 1 - Math.pow(1 - t, 2);
+    ball.scale.setScalar(1 + e * 8.5);
+    ballMat.opacity = 1 - e;
+    core.scale.setScalar(1 + e * 4);
+    coreMat.opacity = Math.max(0, 1 - t * 2.4);
+    light.intensity = 22 * (1 - t) * (1 - t);
+    const step = 1 / 60;
+    sparks.forEach(s => {
+      s.vel.y -= 32 * step;
+      s.mesh.position.addScaledVector(s.vel, step);
+      s.mesh.rotation.x += s.rot.x * step;
+      s.mesh.rotation.y += s.rot.y * step;
+      s.mesh.material.opacity = 1 - e;
+      s.mesh.scale.setScalar(Math.max(0.05, 1 - e));
+    });
+    requestAnimationFrame(anim);
+  })();
+  const RADIUS = 7.5;
+  [...enemies].forEach(e => {
+    if (!e.alive) return;
+    const d = e.group.position.distanceTo(pos);
+    if (d < RADIUS) {
+      const dmg = 130 * (1 - d / RADIUS);
+      damageEnemy(e, Math.max(10, dmg));
+    }
+  });
+  const pd = player.pos.distanceTo(pos);
+  if (pd < RADIUS * 0.65) damagePlayer(25);
+}
+
+/* =========================================================
+   9. 地面补给
+   ========================================================= */
+const pickups = [];
+const PICKUP_INTERVAL = 20;
+let pickupTimer = 0;
+const ammoBoxMat = new THREE.MeshLambertMaterial({ map: pixelTexture('#b8923c') });
+const ammoLidMat = new THREE.MeshLambertMaterial({ map: pixelTexture('#6b5426') });
+const pickupGrenadeMat = new THREE.MeshLambertMaterial({ map: pixelTexture('#3f7a3a') });
+
+function spawnPickup(type) {
+  let x = 0, z = 0, tries = 0;
+  do {
+    x = (Math.random() - 0.5) * 100;
+    z = (Math.random() - 0.5) * 100;
+    tries++;
+  } while ((Math.hypot(x, z) < 6 || Math.hypot(x - player.pos.x, z - player.pos.z) < 8) && tries < 80);
+
+  let mesh;
+  if (type === 'ammo') {
+    const g = new THREE.Group();
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.34, 0.42), ammoBoxMat);
+    g.add(box);
+    const lid = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.08, 0.46), ammoLidMat);
+    lid.position.y = 0.2; g.add(lid);
+    const stripe = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.36, 0.44),
+      new THREE.MeshLambertMaterial({ color: 0xffe066 })
+    );
+    stripe.position.x = 0.1; g.add(stripe);
+    mesh = g;
+  } else {
+    const g = new THREE.Group();
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 6), pickupGrenadeMat);
+    g.add(ball);
+    const handle = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.22, 0.07),
+      new THREE.MeshLambertMaterial({ color: 0x8a7a4a })
+    );
+    handle.position.y = 0.22; g.add(handle);
+    mesh = g;
+  }
+  mesh.position.set(x, 0.45, z);
+  scene.add(mesh);
+  const beamMat = new THREE.MeshBasicMaterial({
+    color: type === 'ammo' ? 0xffd25a : 0x6cf07a,
+    transparent: true, opacity: 0.22, depthWrite: false
+  });
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 4, 8, 1, true), beamMat);
+  beam.position.set(x, 2.2, z);
+  scene.add(beam);
+  pickups.push({ mesh, type, baseY: 0.45, phase: Math.random() * Math.PI * 2, life: 60, beam });
+}
+function spawnRandomPickup() {
+  spawnPickup(Math.random() < 0.6 ? 'ammo' : 'grenade');
+}
+
+/* =========================================================
+   10. 玩家受伤
+   ========================================================= */
+function damagePlayer(amount) {
+  if (gameOver) return;
+  player.hp -= amount;
+  if (player.hp < 0) player.hp = 0;
+  updateHpUI();
+  hurtEl.style.transition = 'none';
+  hurtEl.style.opacity = '0.45';
+  requestAnimationFrame(() => {
+    hurtEl.style.transition = 'opacity .38s';
+    hurtEl.style.opacity = '0';
+  });
+  if (player.hp <= 0) triggerGameOver();
+}
+function triggerGameOver() {
+  gameOver = true;
+  document.getElementById('gameover-tip').textContent = isTouch ? '点击屏幕重新开始' : '按 R 重新开始';
+  gameoverEl.style.display = 'flex';
+  if (document.pointerLockElement) document.exitPointerLock();
+  mouseDown = false;
+}
+function resetGame() {
+  gameOver = false;
+  gameoverEl.style.display = 'none';
+  player.hp = 100;
+  player.pos.set(0, 1.7, 0);
+  player.vel.set(0, 0, 0);
+  player.yaw = 0;
+  player.pitch = 0;
+  updateHpUI();
+  weapon.mag = weapon.magSize;
+  weapon.reserve = weapon.reserveMax;
+  weapon.reloading = false;
+  reloadHint.textContent = '';
+  updateAmmoUI();
+  grenades = 3;
+  updateGrenadeUI();
+  throwAnim.active = false;
+  throwArm.visible = false;
+  heldGrenade.visible = true;
+  gunGroup.visible = true;
+  kills = 0;
+  killsEl.textContent = '击杀: 0';
+  [...enemies].forEach(e => scene.remove(e.group));
+  enemies.length = 0;
+  bullets.forEach(b => scene.remove(b.mesh)); bullets.length = 0;
+  enemyBullets.forEach(b => scene.remove(b.mesh)); enemyBullets.length = 0;
+  grenadeProjectiles.forEach(g => scene.remove(g.mesh)); grenadeProjectiles.length = 0;
+  pickups.forEach(p => { scene.remove(p.mesh); if (p.beam) scene.remove(p.beam); });
+  pickups.length = 0;
+  pickupTimer = 0;
+  touchState.moveInputX = 0;
+  touchState.moveInputY = 0;
+  if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
+  lookPointerId = null;
+  joyPointerId = null;
+  shootPointerId = null;
+  mouseDown = false;
+  for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
+  spawnPickup('ammo');
+  spawnPickup('grenade');
+  if (!isTouch) renderer.domElement.requestPointerLock();
+}
+
+/* =========================================================
+   11. 键盘鼠标（桌面端）
+   ========================================================= */
+const keys = {};
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'KeyR') { if (gameOver) resetGame(); else startReload(); }
+  if (e.code === 'KeyG') throwGrenade();
+  if (e.code === 'Space') e.preventDefault();
+});
+addEventListener('keyup', e => { keys[e.code] = false; });
+
+let mouseDown = false;
+renderer.domElement.addEventListener('click', () => {
+  if (!gameOver && !isTouch && !document.pointerLockElement) {
+    renderer.domElement.requestPointerLock();
+  }
+});
+document.addEventListener('mousedown', e => {
+  if (isTouch) return;
+  if (e.button === 0) mouseDown = true;
+});
+document.addEventListener('mouseup', e => {
+  if (isTouch) return;
+  if (e.button === 0) mouseDown = false;
+});
+addEventListener('blur', () => { mouseDown = false; });
+
+document.addEventListener('mousemove', e => {
+  if (document.pointerLockElement !== renderer.domElement) return;
+  const s = 0.0022;
+  player.yaw -= e.movementX * s;
+  player.pitch -= e.movementY * s;
+  const lim = Math.PI / 2 - 0.02;
+  player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+});
+
+/* =========================================================
+   12. 触摸控制
+   ========================================================= */
+const touchState = { moveInputX: 0, moveInputY: 0 };
+
+let joyPointerId = null;
+let lookPointerId = null;
+let shootPointerId = null;
+let lookLastX = 0;
+let lookLastY = 0;
+
+const joyBase   = document.getElementById('joystick-base');
+const joyKnob   = document.getElementById('joystick-knob');
+const btnShoot  = document.getElementById('btn-shoot');
+const btnJump   = document.getElementById('btn-jump');
+const btnReload = document.getElementById('btn-reload');
+const btnGrenade= document.getElementById('btn-grenade');
+
+const settingsBtn = document.getElementById('settings-btn');
+const resetBtn    = document.getElementById('reset-btn');
+
+const TOUCH_LOOK_SENS = 0.006;
+
+/* =========================================================
+   12.1 按钮位置编辑系统
+   ========================================================= */
+const POS_KEY = 'shooter_button_positions_v2';
+let editMode = false;
+
+// 可拖动元素（name 用于存储）
+const positionableElements = [
+  { el: joyBase,    name: 'joystick' },
+  { el: btnShoot,   name: 'shoot' },
+  { el: btnJump,    name: 'jump' },
+  { el: btnReload,  name: 'reload' },
+  { el: btnGrenade, name: 'grenade' },
+];
+
+function savePositions() {
+  const data = {};
+  positionableElements.forEach(({ el, name }) => {
+    if (!el) return;
+    const left = parseFloat(el.style.left);
+    const top = parseFloat(el.style.top);
+    if (!isNaN(left) && !isNaN(top)) {
+      data[name] = { left, top };
+    }
+  });
+  try { localStorage.setItem(POS_KEY, JSON.stringify(data)); } catch (err) {}
+}
+
+function loadPositions() {
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(POS_KEY) || '{}'); } catch (err) {}
+  positionableElements.forEach(({ el, name }) => {
+    if (!el) return;
+    const pos = data[name];
+    if (pos && typeof pos.left === 'number' && typeof pos.top === 'number') {
+      el.style.left = pos.left + 'px';
+      el.style.top = pos.top + 'px';
+      el.style.right = 'auto';
+      el.style.bottom = 'auto';
+    }
+  });
+}
+
+function clearPositions() {
+  positionableElements.forEach(({ el }) => {
+    if (!el) return;
+    el.style.left = '';
+    el.style.top = '';
+    el.style.right = '';
+    el.style.bottom = '';
+  });
+  try { localStorage.removeItem(POS_KEY); } catch (err) {}
+}
+
+function toLeftTop(el) {
+  const r = el.getBoundingClientRect();
+  el.style.left = r.left + 'px';
+  el.style.top = r.top + 'px';
+  el.style.right = 'auto';
+  el.style.bottom = 'auto';
+}
+
+/* 拖拽实现 */
+function setupDrag(el) {
+  if (!el) return;
+  let dragging = false;
+  let dragPointerId = null;
+  let startX = 0, startY = 0;
+  let startLeft = 0, startTop = 0;
+
+  el.addEventListener('pointerdown', e => {
+    if (!editMode) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    dragging = true;
+    dragPointerId = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+
+    toLeftTop(el);
+    startLeft = parseFloat(el.style.left);
+    startTop  = parseFloat(el.style.top);
+
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    el.classList.add('dragging');
+  }, true);
+
+  el.addEventListener('pointermove', e => {
+    if (!dragging || e.pointerId !== dragPointerId) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const r = el.getBoundingClientRect();
+    const w = r.width, h = r.height;
+
+    let nl = startLeft + dx;
+    let nt = startTop + dy;
+    nl = Math.max(0, Math.min(window.innerWidth  - w, nl));
+    nt = Math.max(0, Math.min(window.innerHeight - h, nt));
+
+    el.style.left = nl + 'px';
+    el.style.top  = nt + 'px';
+  }, true);
+
+  const endDrag = e => {
+    if (!dragging || e.pointerId !== dragPointerId) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    dragging = false;
+    dragPointerId = null;
+    el.classList.remove('dragging');
+    try { el.releasePointerCapture(e.pointerId); } catch (err) {}
+    savePositions();
+  };
+  el.addEventListener('pointerup', endDrag, true);
+  el.addEventListener('pointercancel', endDrag, true);
+}
+
+function enterEditMode() {
+  if (editMode) return;
+  editMode = true;
+  document.body.classList.add('edit-mode');
+  settingsBtn.textContent = '✓';
+  settingsBtn.title = '完成';
+
+  // 暂停进行中的触摸动作
+  mouseDown = false;
+  lookPointerId = null;
+  shootPointerId = null;
+  if (btnShoot) btnShoot.classList.remove('pressed');
+
+  positionableElements.forEach(({ el }) => {
+    if (!el) return;
+    toLeftTop(el);
+  });
+}
+
+function exitEditMode() {
+  if (!editMode) return;
+  editMode = false;
+  document.body.classList.remove('edit-mode');
+  settingsBtn.textContent = '⚙';
+  settingsBtn.title = '设置';
+  savePositions();
+}
+
+/* 设置按钮点击 */
+if (settingsBtn) {
+  settingsBtn.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (editMode) exitEditMode();
+    else enterEditMode();
+  }, { passive: false });
+}
+
+/* 重置按钮点击 */
+if (resetBtn) {
+  resetBtn.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    clearPositions();
+    if (editMode) {
+      // 仍在编辑模式，重新应用 left/top
+      positionableElements.forEach(({ el }) => {
+        if (!el) return;
+        el.style.left = '';
+        el.style.top = '';
+        el.style.right = '';
+        el.style.bottom = '';
+      });
+      // 下一帧再转 left/top（等浏览器应用 CSS 默认值）
+      requestAnimationFrame(() => {
+        positionableElements.forEach(({ el }) => {
+          if (!el) return;
+          toLeftTop(el);
+        });
+      });
+    }
+  }, { passive: false });
+}
+
+/* 初始化拖拽 */
+positionableElements.forEach(({ el }) => setupDrag(el));
+
+/* 加载已保存位置 */
+loadPositions();
+
+/* =========================================================
+   12.2 摇杆 / 按钮事件
+   ========================================================= */
+function updateJoyVisual(tx, ty) {
+  const r = joyBase.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+  const maxDist = r.width / 2 - 33;
+
+  let dx = tx - cx;
+  let dy = ty - cy;
+  const dist = Math.hypot(dx, dy);
+  if (dist > maxDist) {
+    dx = dx / dist * maxDist;
+    dy = dy / dist * maxDist;
+  }
+  joyKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  touchState.moveInputX = dx / maxDist;
+  touchState.moveInputY = -dy / maxDist;
+}
+function resetJoy() {
+  joyPointerId = null;
+  touchState.moveInputX = 0;
+  touchState.moveInputY = 0;
+  if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
+}
+
+/* 通用按钮绑定 */
+function bindButton(el, { onDown, onUp, capture = true } = {}) {
+  if (!el) return;
+  el.addEventListener('pointerdown', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (capture) {
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    el.classList.add('pressed');
+    if (onDown) onDown(e);
+  }, { passive: false });
+  el.addEventListener('pointermove', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (!el.hasPointerCapture || !el.hasPointerCapture(e.pointerId)) return;
+    e.preventDefault();
+    e.stopPropagation();
+  }, { passive: false });
+  const release = e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    e.stopPropagation();
+    el.classList.remove('pressed');
+    if (onUp) onUp(e);
+  };
+  el.addEventListener('pointerup', release);
+  el.addEventListener('pointercancel', release);
+  el.addEventListener('lostpointercapture', release);
+}
+
+if (isTouch) {
+  /* ---------- 摇杆 ---------- */
+  joyBase.addEventListener('pointerdown', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    e.stopPropagation();
+    try { joyBase.setPointerCapture(e.pointerId); } catch (err) {}
+    joyPointerId = e.pointerId;
+    updateJoyVisual(e.clientX, e.clientY);
+  }, { passive: false });
+  joyBase.addEventListener('pointermove', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== joyPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
+    updateJoyVisual(e.clientX, e.clientY);
+  }, { passive: false });
+  const joyRelease = e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== joyPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
+    try { joyBase.releasePointerCapture(e.pointerId); } catch (err) {}
+    resetJoy();
+  };
+  joyBase.addEventListener('pointerup', joyRelease);
+  joyBase.addEventListener('pointercancel', joyRelease);
+
+  /* ---------- 射击按钮（按住连发 + 滑动转向） ---------- */
+  btnShoot.addEventListener('pointerdown', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    e.stopPropagation();
+    btnShoot.classList.add('pressed');
+    shootPointerId = e.pointerId;
+    mouseDown = true;
+
+    if (lookPointerId === null) {
+      lookPointerId = e.pointerId;
+      lookLastX = e.clientX;
+      lookLastY = e.clientY;
+    }
+  }, { passive: false });
+
+  btnShoot.addEventListener('pointermove', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== shootPointerId) return;
+    if (lookPointerId === e.pointerId) {
+      const dx = e.clientX - lookLastX;
+      const dy = e.clientY - lookLastY;
+      lookLastX = e.clientX;
+      lookLastY = e.clientY;
+      player.yaw -= dx * TOUCH_LOOK_SENS;
+      player.pitch -= dy * TOUCH_LOOK_SENS;
+      const lim = Math.PI / 2 - 0.02;
+      player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+    }
+  }, { passive: false });
+
+  const shootRelease = e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== shootPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
+    btnShoot.classList.remove('pressed');
+    shootPointerId = null;
+    mouseDown = false;
+    if (lookPointerId === e.pointerId) lookPointerId = null;
+  };
+  btnShoot.addEventListener('pointerup', shootRelease);
+  btnShoot.addEventListener('pointercancel', shootRelease);
+
+  /* ---------- 跳跃 / 换弹 / 手雷 ---------- */
+  bindButton(btnJump, {
+    capture: false,
+    onDown: () => {
+      if (player.onGround && !gameOver) {
+        player.vel.y = 6.4;
+        player.onGround = false;
+      }
+    }
+  });
+  bindButton(btnReload, {
+    capture: false,
+    onDown: () => startReload()
+  });
+  bindButton(btnGrenade, {
+    capture: false,
+    onDown: () => throwGrenade()
+  });
+
+  /* ---------- 视角控制（画面空白区域起手） ---------- */
+  function isUIElement(el) {
+    return !!(el && el.closest && el.closest('#mobile-controls, #settings-btn, #reset-btn'));
+  }
+
+  window.addEventListener('pointerdown', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (isUIElement(e.target)) return;
+    e.preventDefault();
+    if (lookPointerId === null) {
+      lookPointerId = e.pointerId;
+      lookLastX = e.clientX;
+      lookLastY = e.clientY;
+    }
+  }, { passive: false });
+
+  window.addEventListener('pointermove', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== lookPointerId) return;
+    if (e.pointerId === joyPointerId) return;
+    if (e.pointerId === shootPointerId) return;
+    e.preventDefault();
+    const dx = e.clientX - lookLastX;
+    const dy = e.clientY - lookLastY;
+    lookLastX = e.clientX;
+    lookLastY = e.clientY;
+    player.yaw -= dx * TOUCH_LOOK_SENS;
+    player.pitch -= dy * TOUCH_LOOK_SENS;
+    const lim = Math.PI / 2 - 0.02;
+    player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+  }, { passive: false });
+
+  function lookRelease(e) {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId === lookPointerId) lookPointerId = null;
+  }
+  window.addEventListener('pointerup', lookRelease, { passive: false });
+  window.addEventListener('pointercancel', lookRelease, { passive: false });
+
+  /* ---------- 游戏结束点击屏幕重开 ---------- */
+  gameoverEl.addEventListener('pointerdown', e => {
+    if (editMode) return;
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    if (gameOver) resetGame();
+  }, { passive: false });
+}
+
+/* =========================================================
+   13. 更新逻辑
+   ========================================================= */
+let recoil = 0;
+const PLAYER_R = 0.42;
+
+function collideMove(delta) {
+  ['x', 'z'].forEach(ax => {
+    const before = player.pos[ax];
+    player.pos[ax] += delta[ax];
+    const pBox = new THREE.Box3(
+      new THREE.Vector3(player.pos.x - PLAYER_R, player.pos.y - player.height + 0.15, player.pos.z - PLAYER_R),
+      new THREE.Vector3(player.pos.x + PLAYER_R, player.pos.y + 0.15, player.pos.z + PLAYER_R)
+    );
+    for (const s of solids) {
+      if (pBox.intersectsBox(s)) { player.pos[ax] = before; break; }
+    }
+  });
+}
+
+function updatePlayer(dt, now) {
+  const speed = 8.2;
+  const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+  const right   = new THREE.Vector3( Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+
+  const move = new THREE.Vector3();
+  if (keys['KeyW'] || keys['ArrowUp'])    move.add(forward);
+  if (keys['KeyS'] || keys['ArrowDown'])  move.sub(forward);
+  if (keys['KeyD'] || keys['ArrowRight']) move.add(right);
+  if (keys['KeyA'] || keys['ArrowLeft'])  move.sub(right);
+
+  if (Math.abs(touchState.moveInputX) > 0.05 || Math.abs(touchState.moveInputY) > 0.05) {
+    move.addScaledVector(right,   touchState.moveInputX);
+    move.addScaledVector(forward, touchState.moveInputY);
+  }
+
+  const isMoving = move.lengthSq() > 0;
+  if (isMoving) move.normalize().multiplyScalar(speed * dt);
+
+  collideMove(move);
+
+  if (keys['Space'] && player.onGround) {
+    player.vel.y = 6.4;
+    player.onGround = false;
+  }
+  player.vel.y -= 19 * dt;
+  player.pos.y += player.vel.y * dt;
+
+  if (player.pos.y <= player.height) {
+    player.pos.y = player.height;
+    player.vel.y = 0;
+    player.onGround = true;
+  }
+
+  player.pos.x = Math.max(-62, Math.min(62, player.pos.x));
+  player.pos.z = Math.max(-62, Math.min(62, player.pos.z));
+
+  camera.position.copy(player.pos);
+  camera.rotation.set(0, 0, 0);
+  camera.rotateY(player.yaw);
+  camera.rotateX(player.pitch);
+
+  recoil *= Math.pow(0.0008, dt);
+  let gunY = GUN_REST.y + recoil * 0.55;
+  let gunZ = GUN_REST.z + recoil;
+  let gunRotX = 0;
+  if (weapon.reloading) {
+    const p = Math.min(1, (now - weapon.reloadStart) / weapon.reloadTime);
+    const dip = Math.sin(p * Math.PI);
+    gunY -= dip * 0.3;
+    gunRotX = dip * 0.85;
+  }
+  if (isMoving && player.onGround) {
+    gunY += Math.sin(now * 11) * 0.014;
+    gunZ += Math.cos(now * 11) * 0.008;
+  }
+  gunGroup.position.set(GUN_REST.x, gunY, gunZ);
+  gunGroup.rotation.x = gunRotX;
+
+  if (weapon.reloading && now >= weapon.reloadEnd) finishReload();
+}
+
+const _tmpV = new THREE.Vector3();
+
+function updatePlayerBullets(dt) {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    b.life -= dt;
+    const next = _tmpV.copy(b.mesh.position).addScaledVector(b.dir, b.speed * dt);
+
+    let hitEnemy = null;
+    for (const e of enemies) {
+      if (!e.alive) continue;
+      const dx = next.x - e.group.position.x;
+      const dz = next.z - e.group.position.z;
+      const dy = next.y - e.group.position.y;
+      if (dx * dx + dz * dz < 0.45 * 0.45 && dy > -0.1 && dy < 1.95) { hitEnemy = e; break; }
+    }
+    if (hitEnemy) {
+      damageEnemy(hitEnemy, weapon.damage);
+      spawnSpark(next.clone(), 0xff4040, 1.2);
+      scene.remove(b.mesh);
+      bullets.splice(i, 1);
+      continue;
+    }
+    const probe = new THREE.Box3(
+      new THREE.Vector3(next.x - 0.05, next.y - 0.05, next.z - 0.05),
+      new THREE.Vector3(next.x + 0.05, next.y + 0.05, next.z + 0.05)
+    );
+    let hitWorld = next.y <= 0.02;
+    if (!hitWorld) {
+      for (const s of solids) {
+        if (probe.intersectsBox(s)) { hitWorld = true; break; }
+      }
+    }
+    if (hitWorld) {
+      spawnSpark(next.clone(), 0xffcc66, 0.9);
+      scene.remove(b.mesh);
+      bullets.splice(i, 1);
+      continue;
+    }
+    b.mesh.position.copy(next);
+    if (b.life <= 0) { scene.remove(b.mesh); bullets.splice(i, 1); }
+  }
+}
+
+function updateEnemyBullets(dt) {
+  for (let i = enemyBullets.length - 1; i >= 0; i--) {
+    const b = enemyBullets[i];
+    b.life -= dt;
+    const next = _tmpV.copy(b.mesh.position).addScaledVector(b.dir, b.speed * dt);
+    const dx = next.x - player.pos.x;
+    const dz = next.z - player.pos.z;
+    const dy = next.y - player.pos.y;
+    if (dx * dx + dz * dz < 0.5 * 0.5 && dy > -1.75 && dy < 0.4) {
+      damagePlayer(25);
+      spawnSpark(next.clone(), 0xff3030, 1.3);
+      flashEl.style.transition = 'none';
+      flashEl.style.opacity = '0.22';
+      requestAnimationFrame(() => {
+        flashEl.style.transition = 'opacity .22s';
+        flashEl.style.opacity = '0';
+      });
+      scene.remove(b.mesh);
+      enemyBullets.splice(i, 1);
+      continue;
+    }
+    const probe = new THREE.Box3(
+      new THREE.Vector3(next.x - 0.06, next.y - 0.06, next.z - 0.06),
+      new THREE.Vector3(next.x + 0.06, next.y + 0.06, next.z + 0.06)
+    );
+    let hitWorld = next.y <= 0.02;
+    if (!hitWorld) {
+      for (const s of solids) {
+        if (probe.intersectsBox(s)) { hitWorld = true; break; }
+      }
+    }
+    if (hitWorld) {
+      spawnSpark(next.clone(), 0xff9040, 0.85);
+      scene.remove(b.mesh);
+      enemyBullets.splice(i, 1);
+      continue;
+    }
+    b.mesh.position.copy(next);
+    if (b.life <= 0) { scene.remove(b.mesh); enemyBullets.splice(i, 1); }
+  }
+}
+
+function updateEnemies(dt, now) {
+  for (const e of enemies) {
+    if (!e.alive) continue;
+    if (e.flashTimer > 0) {
+      e.flashTimer -= dt;
+      if (e.flashTimer <= 0) setEnemyEmissive(e, 0x000000);
+    }
+    const dx = player.pos.x - e.group.position.x;
+    const dz = player.pos.z - e.group.position.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist > 0.01) e.group.rotation.y = Math.atan2(dx, dz);
+    if (dist > e.attackRange) {
+      const nx = dx / dist, nz = dz / dist;
+      e.group.position.x += nx * e.speed * dt;
+      e.group.position.z += nz * e.speed * dt;
+      e.walkPhase += dt * 10;
+      e.group.position.y = Math.abs(Math.sin(e.walkPhase)) * 0.07;
+    } else {
+      e.group.position.y = 0;
+    }
+    if (dist < 55 && now >= e.nextShot) {
+      e.nextShot = now + e.shootInterval;
+      enemyShoot(e);
+    }
+  }
+}
+
+function updateGrenades(dt, now) {
+  for (let i = grenadeProjectiles.length - 1; i >= 0; i--) {
+    const g = grenadeProjectiles[i];
+    g.vel.y -= 24 * dt;
+    g.mesh.position.addScaledVector(g.vel, dt);
+    if (g.mesh.position.y < 0.14) {
+      g.mesh.position.y = 0.14;
+      g.vel.y = Math.abs(g.vel.y) * 0.42;
+      g.vel.x *= 0.7; g.vel.z *= 0.7;
+      if (Math.abs(g.vel.y) < 0.6) g.vel.y = 0;
+    }
+    g.mesh.rotation.x += g.spin.x * dt;
+    g.mesh.rotation.y += g.spin.y * dt;
+    g.mesh.rotation.z += g.spin.z * dt;
+    g.timer -= dt;
+    if (g.timer < 0.7) {
+      const on = Math.floor(now * 14) % 2 === 0;
+      g.mesh.scale.setScalar(on ? 1.35 : 1.0);
+    }
+    if (g.timer <= 0) {
+      explode(g.mesh.position.clone());
+      scene.remove(g.mesh);
+      grenadeProjectiles.splice(i, 1);
+    }
+  }
+}
+
+function updatePickups(dt, now) {
+  for (let i = pickups.length - 1; i >= 0; i--) {
+    const p = pickups[i];
+    p.life -= dt;
+    p.mesh.position.y = p.baseY + Math.sin(now * 2.2 + p.phase) * 0.12;
+    p.mesh.rotation.y += dt * 1.6;
+    const d = Math.hypot(p.mesh.position.x - player.pos.x, p.mesh.position.z - player.pos.z);
+    if (d < 1.6) {
+      let taken = false;
+      if (p.type === 'ammo') {
+        if (weapon.reserve < weapon.reserveMax) {
+          weapon.reserve = Math.min(weapon.reserveMax, weapon.reserve + 50);
+          updateAmmoUI(); taken = true;
+        }
+      } else {
+        if (grenades < GRENADE_MAX) { grenades++; updateGrenadeUI(); taken = true; }
+      }
+      if (taken) {
+        spawnSpark(p.mesh.position.clone(), p.type === 'ammo' ? 0xffd25a : 0x6cf07a, 1.1);
+        scene.remove(p.mesh);
+        if (p.beam) scene.remove(p.beam);
+        pickups.splice(i, 1);
+        continue;
+      }
+    }
+    if (p.life <= 0) {
+      scene.remove(p.mesh);
+      if (p.beam) scene.remove(p.beam);
+      pickups.splice(i, 1);
+    }
+  }
+}
+
+function updatePickupSpawn(dt) {
+  pickupTimer += dt;
+  const remain = Math.max(0, PICKUP_INTERVAL - pickupTimer);
+  timerEl.textContent = '下一波补给: ' + Math.ceil(remain) + 's';
+  if (pickupTimer >= PICKUP_INTERVAL) {
+    pickupTimer = 0;
+    spawnRandomPickup();
+  }
+}
+
+/* =========================================================
+   14. 主循环
+   ========================================================= */
+let last = performance.now();
+
+function loop() {
+  requestAnimationFrame(loop);
+  const nowMs = performance.now();
+  let dt = (nowMs - last) / 1000;
+  last = nowMs;
+  dt = Math.min(dt, 0.05);
+  const now = nowMs / 1000;
+
+  if (!gameOver && !editMode) {
+    updatePlayer(dt, now);
+    updateEnemies(dt, now);
+    updateGrenades(dt, now);
+    updatePickups(dt, now);
+    updatePickupSpawn(dt);
+    updateThrowAnimation(now);
+    if (mouseDown) tryShoot();
+  } else if (!gameOver && editMode) {
+    // 编辑模式下不推进游戏世界，但保持渲染
+  }
+
+  updatePlayerBullets(dt);
+  updateEnemyBullets(dt);
+  renderer.render(scene, camera);
+}
+
+/* =========================================================
+   15. 初始化
+   ========================================================= */
+updateHpUI();
+updateAmmoUI();
+updateGrenadeUI();
+
+if (isTouch) {
+  document.getElementById('gameover-tip').textContent = '点击屏幕重新开始';
+}
+
+for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
+spawnPickup('ammo');
+spawnPickup('grenade');
+
+loop();
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+
+  // 屏幕尺寸变化时，重新约束按钮位置
+  positionableElements.forEach(({ el }) => {
+    if (!el) return;
+    const left = parseFloat(el.style.left);
+    const top  = parseFloat(el.style.top);
+    if (isNaN(left) || isNaN(top)) return;
+    const r = el.getBoundingClientRect();
+    const w = r.width, h = r.height;
+    const nl = Math.max(0, Math.min(window.innerWidth  - w, left));
+    const nt = Math.max(0, Math.min(window.innerHeight - h, top));
+    if (nl !== left) el.style.left = nl + 'px';
+    if (nt !== top)  el.style.top  = nt + 'px';
+  });
+});
+</script>
+</body>
+</html>
