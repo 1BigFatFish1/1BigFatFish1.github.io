@@ -13,7 +13,50 @@
     -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none; -webkit-user-drag: none;
     width: 100%; height: 100%; position: fixed; }
-  canvas { display: block; touch-action: none; }
+
+  body.touch-device, body.touch-device * {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+  }
+
+  canvas {
+    display: block;
+    touch-action: none;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* ============ 加载/错误提示 ============ */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: #0e0e16;
+    color: #8fff9f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: monospace;
+    font-size: 16px;
+    z-index: 500;
+    text-align: center;
+    padding: 20px;
+    transition: opacity .3s;
+  }
+  #loader.hide { opacity: 0; pointer-events: none; }
+  #loader .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(140,255,160,0.25);
+    border-top-color: #8fff9f;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loader .err { color: #ff6666; font-size: 14px; line-height: 1.6; max-width: 90vw; word-break: break-all; }
+  #loader .err b { color: #ffdd44; }
 
   #hud { position: fixed; left: 22px; bottom: 22px; color: #fff; font-family: monospace;
     pointer-events: none; z-index: 10; }
@@ -55,29 +98,24 @@
   #info { position: fixed; left: 26px; top: 46px; color: #667; font-family: monospace;
     font-size: 12px; pointer-events: none; line-height: 1.6; z-index: 10; }
 
-  /* ============ 设置按钮 ============ */
   #settings-btn {
     position: fixed;
     right: 16px;
     top: 130px;
-    width: 46px;
-    height: 46px;
+    width: 46px; height: 46px;
     border-radius: 50%;
     background: rgba(60, 70, 100, 0.9);
     border: 2px solid rgba(180, 200, 255, 0.65);
     color: #fff;
-    font-size: 22px;
-    font-weight: bold;
+    font-size: 22px; font-weight: bold;
     display: none;
-    align-items: center;
-    justify-content: center;
+    align-items: center; justify-content: center;
     cursor: pointer;
     z-index: 60;
     user-select: none;
     touch-action: none;
     box-shadow: 0 3px 12px rgba(0,0,0,0.55), inset 0 0 10px rgba(120,180,255,0.2);
     -webkit-tap-highlight-color: transparent;
-    transition: transform .08s, background .08s;
   }
   #settings-btn:active { transform: scale(0.9); }
   body.touch-device #settings-btn { display: flex; }
@@ -86,11 +124,9 @@
     border-color: rgba(180, 255, 200, 0.9);
   }
 
-  /* 编辑模式提示 */
   #edit-hint {
     position: fixed;
-    top: 12px;
-    left: 50%;
+    top: 40px; left: 50%;
     transform: translateX(-50%);
     background: rgba(0,0,0,0.88);
     color: #ffdd44;
@@ -104,22 +140,18 @@
     max-width: 92vw;
     text-align: center;
     border: 1px solid rgba(255,220,80,0.5);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
   }
   body.edit-mode #edit-hint { display: block; }
 
-  /* 重置按钮 */
   #reset-btn {
     position: fixed;
-    top: 56px;
-    left: 50%;
+    top: 82px; left: 50%;
     transform: translateX(-50%);
     background: rgba(200, 60, 60, 0.9);
     color: #fff;
     padding: 9px 22px;
     border-radius: 8px;
-    font-size: 13px;
-    font-weight: bold;
+    font-size: 13px; font-weight: bold;
     display: none;
     z-index: 60;
     cursor: pointer;
@@ -127,22 +159,19 @@
     user-select: none;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.5);
   }
   body.edit-mode #reset-btn { display: block; }
-  #reset-btn:active { transform: translateX(-50%) scale(0.95); }
 
-  /* 编辑模式下，可拖动元素发光提示 */
+  body.edit-mode #mobile-controls > *,
+  body.edit-mode #settings-btn,
+  body.edit-mode #reset-btn {
+    pointer-events: auto;
+  }
   body.edit-mode #mobile-controls .ctrl-btn,
   body.edit-mode #joystick-base {
     outline: 2px dashed #ffdd44;
     outline-offset: 3px;
     animation: editPulse 1.3s ease-in-out infinite;
-  }
-  body.edit-mode #mobile-controls .ctrl-btn.pressed,
-  body.edit-mode #mobile-controls .ctrl-btn:active {
-    transform: none !important;
-    background: rgba(40,45,70,0.7) !important;
   }
   @keyframes editPulse {
     0%, 100% { filter: brightness(1); }
@@ -155,7 +184,6 @@
     filter: brightness(1.25) !important;
   }
 
-  /* ============ 手机控制 ============ */
   #mobile-controls {
     display: none;
     position: fixed;
@@ -196,7 +224,6 @@
     touch-action: none; text-shadow: 1px 1px 3px #000; line-height: 1.15;
     padding: 4px;
     box-shadow: 0 3px 12px rgba(0,0,0,0.45), inset 0 0 12px rgba(120,160,255,0.12);
-    transition: transform .08s, background .08s;
   }
   .ctrl-btn.pressed { transform: scale(0.92); background: rgba(90,120,200,0.75); }
 
@@ -239,28 +266,7 @@
   body.touch-device #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
   body.touch-device #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
 
-  body.touch-device #joystick-base {
-    left: max(18px, env(safe-area-inset-left));
-    bottom: max(24px, env(safe-area-inset-bottom));
-  }
-  body.touch-device #btn-shoot {
-    right: max(20px, env(safe-area-inset-right));
-    bottom: max(24px, env(safe-area-inset-bottom));
-  }
-  body.touch-device #btn-jump {
-    right: max(24px, env(safe-area-inset-right));
-    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
-  }
-  body.touch-device #btn-reload {
-    right: calc(max(20px, env(safe-area-inset-right)) + 122px);
-    bottom: max(24px, env(safe-area-inset-bottom));
-  }
-  body.touch-device #btn-grenade {
-    right: calc(max(20px, env(safe-area-inset-right)) + 126px);
-    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
-  }
-
-  @media (max-width: 400px) {
+  @media (max-width: 400px) and (orientation: portrait) {
     body.touch-device #joystick-base { width: 130px; height: 130px; }
     body.touch-device #joystick-knob { width: 58px; height: 58px; }
     body.touch-device #btn-shoot { width: 92px; height: 92px; font-size: 16px; }
@@ -277,35 +283,62 @@
     }
   }
 
-  @media (orientation: landscape) and (max-height: 520px) {
+  @media (orientation: landscape) {
+    body.touch-device #hud { left: 12px; top: 10px; bottom: auto; }
+    body.touch-device #hpbar-bg { width: 130px; height: 12px; }
+    body.touch-device #hptext { font-size: 11px; margin-top: 2px; }
+    body.touch-device #kills { left: 12px; top: 44px; right: auto; font-size: 11px; }
+    body.touch-device #timer { left: 12px; top: 62px; font-size: 10px; }
+    body.touch-device #ammo { right: 12px; top: 10px; bottom: auto; }
+    body.touch-device #mag { font-size: 22px; }
+    body.touch-device #reserve { font-size: 12px; }
+    body.touch-device #reload-hint { font-size: 10px; height: 14px; margin-top: 0; }
+    body.touch-device #grenade { right: 12px; top: 62px; bottom: auto; font-size: 11px; }
+
+    body.touch-device #settings-btn {
+      right: max(10px, env(safe-area-inset-right));
+      top: max(10px, env(safe-area-inset-top));
+      width: 38px; height: 38px; font-size: 18px;
+    }
+
+    #edit-hint { top: 6px; font-size: 11px; padding: 6px 12px; }
+    #reset-btn { top: 34px; font-size: 11px; padding: 6px 16px; }
+
     body.touch-device #joystick-base {
-      width: 118px; height: 118px;
-      left: max(16px, env(safe-area-inset-left));
-      bottom: max(16px, env(safe-area-inset-bottom));
+      width: 116px; height: 116px;
+      left: max(14px, env(safe-area-inset-left));
+      bottom: max(14px, env(safe-area-inset-bottom));
     }
-    body.touch-device #joystick-knob { width: 52px; height: 52px; }
+    body.touch-device #joystick-knob { width: 50px; height: 50px; }
+
+    body.touch-device .ctrl-btn { width: 58px; height: 58px; font-size: 11px; }
     body.touch-device #btn-shoot {
-      width: 84px; height: 84px; font-size: 15px;
-      right: max(16px, env(safe-area-inset-right));
-      bottom: max(16px, env(safe-area-inset-bottom));
+      width: 82px; height: 82px; font-size: 14px;
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(14px, env(safe-area-inset-bottom));
     }
-    body.touch-device .ctrl-btn { width: 62px; height: 62px; font-size: 11px; }
     body.touch-device #btn-jump {
-      right: max(18px, env(safe-area-inset-right));
-      bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px);
+      right: max(16px, env(safe-area-inset-right));
+      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
     }
     body.touch-device #btn-reload {
-      right: calc(max(16px, env(safe-area-inset-right)) + 100px);
-      bottom: max(16px, env(safe-area-inset-bottom));
+      right: calc(max(14px, env(safe-area-inset-right)) + 96px);
+      bottom: max(14px, env(safe-area-inset-bottom));
     }
     body.touch-device #btn-grenade {
-      right: calc(max(16px, env(safe-area-inset-right)) + 104px);
-      bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px);
+      right: calc(max(14px, env(safe-area-inset-right)) + 100px);
+      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
     }
   }
 </style>
 </head>
 <body>
+
+<!-- 加载/错误提示 -->
+<div id="loader">
+  <div class="spinner"></div>
+  <div>正在加载 3D 引擎…</div>
+</div>
 
 <div id="hud">
   <div id="hpbar-bg"><div id="hpbar"></div></div>
@@ -336,7 +369,6 @@
   R 换弹 · G 投掷手榴弹
 </div>
 
-<!-- 设置按钮 -->
 <div id="settings-btn" title="设置">⚙</div>
 <div id="edit-hint">拖动按钮到合适位置，点击 ✓ 保存</div>
 <div id="reset-btn">重置位置</div>
@@ -352,8 +384,10 @@
 <script>
 (function () {
   function detectTouch() {
-    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
-    if (window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches) return true;
+    try {
+      if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
+      if (window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches) return true;
+    } catch (e) {}
     if ('ontouchstart' in window) return true;
     if (navigator.maxTouchPoints > 0) return true;
     if (navigator.msMaxTouchPoints > 0) return true;
@@ -365,26 +399,63 @@
 
   function applyTouchClass() {
     if (!isTouch) return;
-    document.documentElement.classList.add('touch-device');
-    if (document.body) {
-      document.body.classList.add('touch-device');
-      const mc = document.getElementById('mobile-controls');
-      if (mc) mc.style.display = 'block';
-    } else {
-      document.addEventListener('DOMContentLoaded', applyTouchClass, { once: true });
-    }
+    try {
+      document.documentElement.classList.add('touch-device');
+      if (document.body) {
+        document.body.classList.add('touch-device');
+        const mc = document.getElementById('mobile-controls');
+        if (mc) mc.style.display = 'block';
+      } else {
+        document.addEventListener('DOMContentLoaded', applyTouchClass, { once: true });
+      }
+    } catch (e) {}
   }
   applyTouchClass();
   window.addEventListener('load', applyTouchClass);
+
+  /* 全局错误显示 */
+  window.addEventListener('error', function (e) {
+    var loader = document.getElementById('loader');
+    if (!loader || loader.classList.contains('hide')) return;
+    loader.innerHTML = '<div class="err"><b>加载出错</b><br>' +
+      (e.message || '未知错误') + '<br><br>请检查网络连接后刷新页面。</div>';
+  });
 })();
 </script>
 
-<script type="importmap">
-{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-</script>
-
 <script type="module">
-import * as THREE from 'three';
+/* =========================================================
+   ★ 关键修复：直接 URL import，不依赖 import maps
+   ========================================================= */
+let THREE;
+try {
+  THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+} catch (e1) {
+  try {
+    THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+  } catch (e2) {
+    try {
+      THREE = await import('https://esm.sh/three@0.160.0');
+    } catch (e3) {
+      const loader = document.getElementById('loader');
+      if (loader) {
+        loader.innerHTML = '<div class="err"><b>3D 引擎加载失败</b><br>' +
+          '请检查网络连接，或换一个浏览器试试。<br><br>' +
+          '错误：' + (e3 && e3.message ? e3.message : '未知') + '</div>';
+      }
+      throw e3;
+    }
+  }
+}
+
+/* =========================================================
+   隐藏加载提示
+   ========================================================= */
+const loaderEl = document.getElementById('loader');
+if (loaderEl) {
+  loaderEl.classList.add('hide');
+  setTimeout(() => { try { loaderEl.remove(); } catch (e) {} }, 500);
+}
 
 const isTouch = window.__IS_TOUCH__ === true;
 if (isTouch) {
@@ -788,7 +859,7 @@ function enemyShoot(e) {
 }
 
 /* =========================================================
-   8. 手榴弹 & 爆炸
+   8. 手榴弹
    ========================================================= */
 const grenadeProjectiles = [];
 const grenadeGeo = new THREE.SphereGeometry(0.13, 8, 6);
@@ -1050,7 +1121,7 @@ function resetGame() {
 }
 
 /* =========================================================
-   11. 键盘鼠标（桌面端）
+   11. 键盘鼠标
    ========================================================= */
 const keys = {};
 addEventListener('keydown', e => {
@@ -1110,12 +1181,10 @@ const resetBtn    = document.getElementById('reset-btn');
 const TOUCH_LOOK_SENS = 0.006;
 
 /* =========================================================
-   12.1 按钮位置编辑系统
+   12.1 编辑模式
    ========================================================= */
-const POS_KEY = 'shooter_button_positions_v2';
 let editMode = false;
 
-// 可拖动元素（name 用于存储）
 const positionableElements = [
   { el: joyBase,    name: 'joystick' },
   { el: btnShoot,   name: 'shoot' },
@@ -1124,20 +1193,27 @@ const positionableElements = [
   { el: btnGrenade, name: 'grenade' },
 ];
 
+const POS_KEY = 'shooter_pos_v6';
+
 function savePositions() {
   const data = {};
   positionableElements.forEach(({ el, name }) => {
     if (!el) return;
     const left = parseFloat(el.style.left);
     const top = parseFloat(el.style.top);
-    if (!isNaN(left) && !isNaN(top)) {
-      data[name] = { left, top };
-    }
+    if (!isNaN(left) && !isNaN(top)) data[name] = { left, top };
   });
   try { localStorage.setItem(POS_KEY, JSON.stringify(data)); } catch (err) {}
 }
 
 function loadPositions() {
+  positionableElements.forEach(({ el }) => {
+    if (!el) return;
+    el.style.left = '';
+    el.style.top = '';
+    el.style.right = '';
+    el.style.bottom = '';
+  });
   let data = {};
   try { data = JSON.parse(localStorage.getItem(POS_KEY) || '{}'); } catch (err) {}
   positionableElements.forEach(({ el, name }) => {
@@ -1153,6 +1229,7 @@ function loadPositions() {
 }
 
 function clearPositions() {
+  try { localStorage.removeItem(POS_KEY); } catch (err) {}
   positionableElements.forEach(({ el }) => {
     if (!el) return;
     el.style.left = '';
@@ -1160,7 +1237,6 @@ function clearPositions() {
     el.style.right = '';
     el.style.bottom = '';
   });
-  try { localStorage.removeItem(POS_KEY); } catch (err) {}
 }
 
 function toLeftTop(el) {
@@ -1171,7 +1247,15 @@ function toLeftTop(el) {
   el.style.bottom = 'auto';
 }
 
-/* 拖拽实现 */
+function clearTextSelection() {
+  try {
+    if (window.getSelection) {
+      const sel = window.getSelection();
+      if (sel && sel.removeAllRanges) sel.removeAllRanges();
+    }
+  } catch (e) {}
+}
+
 function setupDrag(el) {
   if (!el) return;
   let dragging = false;
@@ -1183,52 +1267,49 @@ function setupDrag(el) {
     if (!editMode) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
-    e.stopImmediatePropagation();
-
+    e.stopPropagation();
+    clearTextSelection();
     dragging = true;
     dragPointerId = e.pointerId;
     startX = e.clientX;
     startY = e.clientY;
-
     toLeftTop(el);
     startLeft = parseFloat(el.style.left);
     startTop  = parseFloat(el.style.top);
-
     try { el.setPointerCapture(e.pointerId); } catch (err) {}
     el.classList.add('dragging');
-  }, true);
+  });
 
   el.addEventListener('pointermove', e => {
     if (!dragging || e.pointerId !== dragPointerId) return;
     e.preventDefault();
-    e.stopImmediatePropagation();
-
+    e.stopPropagation();
+    clearTextSelection();
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     const r = el.getBoundingClientRect();
     const w = r.width, h = r.height;
-
     let nl = startLeft + dx;
     let nt = startTop + dy;
     nl = Math.max(0, Math.min(window.innerWidth  - w, nl));
     nt = Math.max(0, Math.min(window.innerHeight - h, nt));
-
     el.style.left = nl + 'px';
     el.style.top  = nt + 'px';
-  }, true);
+  });
 
   const endDrag = e => {
     if (!dragging || e.pointerId !== dragPointerId) return;
     e.preventDefault();
-    e.stopImmediatePropagation();
+    e.stopPropagation();
     dragging = false;
     dragPointerId = null;
     el.classList.remove('dragging');
     try { el.releasePointerCapture(e.pointerId); } catch (err) {}
     savePositions();
+    clearTextSelection();
   };
-  el.addEventListener('pointerup', endDrag, true);
-  el.addEventListener('pointercancel', endDrag, true);
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
 }
 
 function enterEditMode() {
@@ -1236,14 +1317,11 @@ function enterEditMode() {
   editMode = true;
   document.body.classList.add('edit-mode');
   settingsBtn.textContent = '✓';
-  settingsBtn.title = '完成';
-
-  // 暂停进行中的触摸动作
+  clearTextSelection();
   mouseDown = false;
   lookPointerId = null;
   shootPointerId = null;
   if (btnShoot) btnShoot.classList.remove('pressed');
-
   positionableElements.forEach(({ el }) => {
     if (!el) return;
     toLeftTop(el);
@@ -1255,11 +1333,10 @@ function exitEditMode() {
   editMode = false;
   document.body.classList.remove('edit-mode');
   settingsBtn.textContent = '⚙';
-  settingsBtn.title = '设置';
   savePositions();
+  clearTextSelection();
 }
 
-/* 设置按钮点击 */
 if (settingsBtn) {
   settingsBtn.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1270,7 +1347,6 @@ if (settingsBtn) {
   }, { passive: false });
 }
 
-/* 重置按钮点击 */
 if (resetBtn) {
   resetBtn.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1278,15 +1354,6 @@ if (resetBtn) {
     e.stopPropagation();
     clearPositions();
     if (editMode) {
-      // 仍在编辑模式，重新应用 left/top
-      positionableElements.forEach(({ el }) => {
-        if (!el) return;
-        el.style.left = '';
-        el.style.top = '';
-        el.style.right = '';
-        el.style.bottom = '';
-      });
-      // 下一帧再转 left/top（等浏览器应用 CSS 默认值）
       requestAnimationFrame(() => {
         positionableElements.forEach(({ el }) => {
           if (!el) return;
@@ -1297,21 +1364,17 @@ if (resetBtn) {
   }, { passive: false });
 }
 
-/* 初始化拖拽 */
 positionableElements.forEach(({ el }) => setupDrag(el));
 
-/* 加载已保存位置 */
-loadPositions();
-
 /* =========================================================
-   12.2 摇杆 / 按钮事件
+   12.2 摇杆 / 按钮
    ========================================================= */
 function updateJoyVisual(tx, ty) {
   const r = joyBase.getBoundingClientRect();
   if (!r.width || !r.height) return;
   const cx = r.left + r.width / 2;
   const cy = r.top + r.height / 2;
-  const maxDist = r.width / 2 - 33;
+  const maxDist = r.width / 2 - 28;
 
   let dx = tx - cx;
   let dy = ty - cy;
@@ -1331,42 +1394,11 @@ function resetJoy() {
   if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
 }
 
-/* 通用按钮绑定 */
-function bindButton(el, { onDown, onUp, capture = true } = {}) {
-  if (!el) return;
-  el.addEventListener('pointerdown', e => {
-    if (editMode) return;
-    if (e.pointerType === 'mouse') return;
-    e.preventDefault();
-    e.stopPropagation();
-    if (capture) {
-      try { el.setPointerCapture(e.pointerId); } catch (err) {}
-    }
-    el.classList.add('pressed');
-    if (onDown) onDown(e);
-  }, { passive: false });
-  el.addEventListener('pointermove', e => {
-    if (editMode) return;
-    if (e.pointerType === 'mouse') return;
-    if (!el.hasPointerCapture || !el.hasPointerCapture(e.pointerId)) return;
-    e.preventDefault();
-    e.stopPropagation();
-  }, { passive: false });
-  const release = e => {
-    if (editMode) return;
-    if (e.pointerType === 'mouse') return;
-    e.preventDefault();
-    e.stopPropagation();
-    el.classList.remove('pressed');
-    if (onUp) onUp(e);
-  };
-  el.addEventListener('pointerup', release);
-  el.addEventListener('pointercancel', release);
-  el.addEventListener('lostpointercapture', release);
-}
-
 if (isTouch) {
-  /* ---------- 摇杆 ---------- */
+  document.addEventListener('selectstart', e => e.preventDefault());
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('dragstart', e => e.preventDefault());
+
   joyBase.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1376,6 +1408,7 @@ if (isTouch) {
     joyPointerId = e.pointerId;
     updateJoyVisual(e.clientX, e.clientY);
   }, { passive: false });
+
   joyBase.addEventListener('pointermove', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1384,6 +1417,7 @@ if (isTouch) {
     e.stopPropagation();
     updateJoyVisual(e.clientX, e.clientY);
   }, { passive: false });
+
   const joyRelease = e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1396,7 +1430,6 @@ if (isTouch) {
   joyBase.addEventListener('pointerup', joyRelease);
   joyBase.addEventListener('pointercancel', joyRelease);
 
-  /* ---------- 射击按钮（按住连发 + 滑动转向） ---------- */
   btnShoot.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1405,7 +1438,6 @@ if (isTouch) {
     btnShoot.classList.add('pressed');
     shootPointerId = e.pointerId;
     mouseDown = true;
-
     if (lookPointerId === null) {
       lookPointerId = e.pointerId;
       lookLastX = e.clientX;
@@ -1417,6 +1449,8 @@ if (isTouch) {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
     if (e.pointerId !== shootPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
     if (lookPointerId === e.pointerId) {
       const dx = e.clientX - lookLastX;
       const dy = e.clientY - lookLastY;
@@ -1443,26 +1477,36 @@ if (isTouch) {
   btnShoot.addEventListener('pointerup', shootRelease);
   btnShoot.addEventListener('pointercancel', shootRelease);
 
-  /* ---------- 跳跃 / 换弹 / 手雷 ---------- */
-  bindButton(btnJump, {
-    capture: false,
-    onDown: () => {
-      if (player.onGround && !gameOver) {
-        player.vel.y = 6.4;
-        player.onGround = false;
-      }
+  function bindSimpleButton(el, onDown) {
+    if (!el) return;
+    el.addEventListener('pointerdown', e => {
+      if (editMode) return;
+      if (e.pointerType === 'mouse') return;
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.add('pressed');
+      if (onDown) onDown();
+    }, { passive: false });
+    const release = e => {
+      if (editMode) return;
+      if (e.pointerType === 'mouse') return;
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.remove('pressed');
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+  }
+
+  bindSimpleButton(btnJump, () => {
+    if (player.onGround && !gameOver) {
+      player.vel.y = 6.4;
+      player.onGround = false;
     }
   });
-  bindButton(btnReload, {
-    capture: false,
-    onDown: () => startReload()
-  });
-  bindButton(btnGrenade, {
-    capture: false,
-    onDown: () => throwGrenade()
-  });
+  bindSimpleButton(btnReload, () => startReload());
+  bindSimpleButton(btnGrenade, () => throwGrenade());
 
-  /* ---------- 视角控制（画面空白区域起手） ---------- */
   function isUIElement(el) {
     return !!(el && el.closest && el.closest('#mobile-controls, #settings-btn, #reset-btn'));
   }
@@ -1504,7 +1548,6 @@ if (isTouch) {
   window.addEventListener('pointerup', lookRelease, { passive: false });
   window.addEventListener('pointercancel', lookRelease, { passive: false });
 
-  /* ---------- 游戏结束点击屏幕重开 ---------- */
   gameoverEl.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1785,27 +1828,32 @@ let last = performance.now();
 
 function loop() {
   requestAnimationFrame(loop);
-  const nowMs = performance.now();
-  let dt = (nowMs - last) / 1000;
-  last = nowMs;
-  dt = Math.min(dt, 0.05);
-  const now = nowMs / 1000;
 
-  if (!gameOver && !editMode) {
-    updatePlayer(dt, now);
-    updateEnemies(dt, now);
-    updateGrenades(dt, now);
-    updatePickups(dt, now);
-    updatePickupSpawn(dt);
-    updateThrowAnimation(now);
-    if (mouseDown) tryShoot();
-  } else if (!gameOver && editMode) {
-    // 编辑模式下不推进游戏世界，但保持渲染
+  try {
+    const nowMs = performance.now();
+    let dt = (nowMs - last) / 1000;
+    last = nowMs;
+    dt = Math.min(dt, 0.05);
+    const now = nowMs / 1000;
+
+    if (!gameOver && !editMode) {
+      updatePlayer(dt, now);
+      updateEnemies(dt, now);
+      updateGrenades(dt, now);
+      updatePickups(dt, now);
+      updatePickupSpawn(dt);
+      updateThrowAnimation(now);
+      if (mouseDown) tryShoot();
+    }
+
+    updatePlayerBullets(dt);
+    updateEnemyBullets(dt);
+    renderer.render(scene, camera);
+  } catch (e) {
+    console.error('loop error:', e);
+    last = performance.now();
+    try { renderer.render(scene, camera); } catch (e2) {}
   }
-
-  updatePlayerBullets(dt);
-  updateEnemyBullets(dt);
-  renderer.render(scene, camera);
 }
 
 /* =========================================================
@@ -1823,26 +1871,46 @@ for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
 spawnPickup('ammo');
 spawnPickup('grenade');
 
+loadPositions();
+
 loop();
 
-addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+/* =========================================================
+   16. 屏幕尺寸变化
+   ========================================================= */
+let resizeTimer = null;
+function handleResize() {
+  try {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
 
-  // 屏幕尺寸变化时，重新约束按钮位置
-  positionableElements.forEach(({ el }) => {
-    if (!el) return;
-    const left = parseFloat(el.style.left);
-    const top  = parseFloat(el.style.top);
-    if (isNaN(left) || isNaN(top)) return;
-    const r = el.getBoundingClientRect();
-    const w = r.width, h = r.height;
-    const nl = Math.max(0, Math.min(window.innerWidth  - w, left));
-    const nt = Math.max(0, Math.min(window.innerHeight - h, top));
-    if (nl !== left) el.style.left = nl + 'px';
-    if (nt !== top)  el.style.top  = nt + 'px';
-  });
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
+
+    positionableElements.forEach(({ el }) => {
+      if (!el) return;
+      const left = parseFloat(el.style.left);
+      const top  = parseFloat(el.style.top);
+      if (isNaN(left) || isNaN(top)) return;
+      const r = el.getBoundingClientRect();
+      const w2 = r.width, h2 = r.height;
+      const nl = Math.max(0, Math.min(w - w2, left));
+      const nt = Math.max(0, Math.min(h - h2, top));
+      if (nl !== left) el.style.left = nl + 'px';
+      if (nt !== top)  el.style.top  = nt + 'px';
+    });
+
+    if (joyKnob && joyPointerId === null) {
+      joyKnob.style.transform = 'translate(-50%, -50%)';
+    }
+  } catch (e) {}
+}
+
+addEventListener('resize', () => {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(handleResize, 120);
 });
 </script>
 </body>
