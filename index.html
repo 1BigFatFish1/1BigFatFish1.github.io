@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>3D 第一人称像素射击 · 手机适配版</title>
+<title>子弹发射器vs会吐红色口水没素质刁民模拟器</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; overflow: hidden; background: #0e0e16;
@@ -15,7 +15,6 @@
     width: 100%; height: 100%; position: fixed; }
   canvas { display: block; touch-action: none; }
 
-  /* ============ HUD ============ */
   #hud { position: fixed; left: 22px; bottom: 22px; color: #fff; font-family: monospace;
     pointer-events: none; z-index: 10; }
   #hpbar-bg { width: 260px; height: 24px; background: #000a; border: 2px solid #fff6; position: relative; }
@@ -55,8 +54,7 @@
   #info { position: fixed; left: 26px; top: 46px; color: #667; font-family: monospace;
     font-size: 12px; pointer-events: none; line-height: 1.6; z-index: 10; }
 
-  /* ============ 手机控制容器 ============ */
-  /* 关键：容器 pointer-events: none，不拦截任何触摸；子元素 auto 才接收 */
+  /* ============ 手机控制 ============ */
   #mobile-controls {
     display: none;
     position: fixed;
@@ -67,7 +65,6 @@
   body.touch-device #mobile-controls { display: block; }
   #mobile-controls > * { pointer-events: auto; }
 
-  /* 摇杆 */
   #joystick-base {
     position: fixed;
     left: 24px; bottom: 30px;
@@ -88,7 +85,6 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 22px rgba(120,180,255,0.55);
   }
 
-  /* 按钮 */
   .ctrl-btn {
     position: fixed;
     width: 78px; height: 78px; border-radius: 50%;
@@ -142,7 +138,6 @@
   body.touch-device #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
   body.touch-device #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
 
-  /* 安全区域 */
   body.touch-device #joystick-base {
     left: max(18px, env(safe-area-inset-left));
     bottom: max(24px, env(safe-area-inset-bottom));
@@ -246,7 +241,6 @@
 </div>
 
 <script>
-/* ★★★ 触摸设备检测：立即执行，保证控制键第一时间显示 ★★★ */
 (function () {
   function detectTouch() {
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
@@ -284,7 +278,6 @@
 import * as THREE from 'three';
 
 const isTouch = window.__IS_TOUCH__ === true;
-
 if (isTouch) {
   document.documentElement.classList.add('touch-device');
   document.body.classList.add('touch-device');
@@ -331,7 +324,7 @@ sun.position.set(30, 70, 25);
 scene.add(sun);
 
 /* =========================================================
-   2. 世界 + 静态碰撞盒
+   2. 世界
    ========================================================= */
 const solids = [];
 function addSolid(mesh) {
@@ -434,7 +427,6 @@ gunGroup.position.copy(GUN_REST);
 gunGroup.traverse(o => { o.frustumCulled = false; });
 camera.add(gunGroup);
 
-/* 投掷手臂 */
 const throwArm = new THREE.Group();
 const skinMatArm = new THREE.MeshLambertMaterial({ map: pixelTexture('#e8c19a') });
 const forearm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.42), skinMatArm);
@@ -938,6 +930,9 @@ function resetGame() {
   touchState.moveInputX = 0;
   touchState.moveInputY = 0;
   if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
+  lookPointerId = null;
+  joyPointerId = null;
+  shootPointerId = null;
   mouseDown = false;
   for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
   spawnPickup('ammo');
@@ -983,7 +978,7 @@ document.addEventListener('mousemove', e => {
 });
 
 /* =========================================================
-   12. 触摸控制（核心重写：用 pointer 事件统一处理）
+   12. 触摸控制（重写：按钮用 setPointerCapture 自己锁定指针）
    ========================================================= */
 const touchState = { moveInputX: 0, moveInputY: 0 };
 
@@ -1001,23 +996,10 @@ const btnReload = document.getElementById('btn-reload');
 const btnGrenade= document.getElementById('btn-grenade');
 
 const TOUCH_LOOK_SENS = 0.006;
-/* 屏幕边缘保留区：避免从按钮附近起手被误判为视角拖动 */
-const EDGE_SAFE = 8;
 
-function getRect(el) {
-  if (!el) return null;
-  const r = el.getBoundingClientRect();
-  if (r.width <= 0 || r.height <= 0) return null;
-  return r;
-}
-function pointIn(x, y, el) {
-  const r = getRect(el);
-  if (!r) return false;
-  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
-}
 function updateJoyVisual(tx, ty) {
-  const r = getRect(joyBase);
-  if (!r) return;
+  const r = joyBase.getBoundingClientRect();
+  if (!r.width || !r.height) return;
   const cx = r.left + r.width / 2;
   const cy = r.top + r.height / 2;
   const maxDist = r.width / 2 - 33;
@@ -1040,205 +1022,141 @@ function resetJoy() {
   if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
 }
 
-if (isTouch) {
-  /* ---------- 使用 pointer 事件（兼容性最好） ---------- */
-  /* 先尝试 pointer events，如果浏览器不支持，回退到 touch events */
-  const usePointer = ('onpointerdown' in window) && navigator.maxTouchPoints > 0;
-
-  /* ================= pointer 事件方案 ================= */
-  function pointerDown(e) {
-    if (e.pointerType === 'mouse') return;    // 鼠标走原来的逻辑
+/* 通用：给按钮绑定 pointer 事件，并锁定指针 */
+function bindButton(el, { onDown, onUp, onMove, capture = true } = {}) {
+  if (!el) return;
+  el.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
     e.preventDefault();
-
-    const x = e.clientX;
-    const y = e.clientY;
-
-    /* 摇杆 */
-    if (joyPointerId === null && pointIn(x, y, joyBase)) {
-      joyPointerId = e.pointerId;
-      updateJoyVisual(x, y);
-      return;
+    e.stopPropagation();
+    if (capture) {
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
     }
-    /* 射击 */
-    if (shootPointerId === null && pointIn(x, y, btnShoot)) {
+    el.classList.add('pressed');
+    if (onDown) onDown(e);
+  });
+  el.addEventListener('pointermove', e => {
+    if (e.pointerType === 'mouse') return;
+    if (!el.hasPointerCapture || !el.hasPointerCapture(e.pointerId)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (onMove) onMove(e);
+  });
+  const release = e => {
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    e.stopPropagation();
+    el.classList.remove('pressed');
+    if (onUp) onUp(e);
+  };
+  el.addEventListener('pointerup', release);
+  el.addEventListener('pointercancel', release);
+  el.addEventListener('lostpointercapture', release);
+}
+
+if (isTouch) {
+  /* ---------- 摇杆（自行锁定指针，pointermove 只在自己的元素上触发） ---------- */
+  joyBase.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    e.stopPropagation();
+    try { joyBase.setPointerCapture(e.pointerId); } catch (err) {}
+    joyPointerId = e.pointerId;
+    updateJoyVisual(e.clientX, e.clientY);
+  });
+  joyBase.addEventListener('pointermove', e => {
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== joyPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
+    updateJoyVisual(e.clientX, e.clientY);
+  });
+  const joyRelease = e => {
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== joyPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
+    try { joyBase.releasePointerCapture(e.pointerId); } catch (err) {}
+    resetJoy();
+  };
+  joyBase.addEventListener('pointerup', joyRelease);
+  joyBase.addEventListener('pointercancel', joyRelease);
+
+  /* ---------- 射击按钮（按住连发，锁定指针，不会转向） ---------- */
+  bindButton(btnShoot, {
+    onDown: e => {
       shootPointerId = e.pointerId;
       mouseDown = true;
-      btnShoot.classList.add('pressed');
-      return;
+    },
+    onUp: e => {
+      if (e.pointerId === shootPointerId) {
+        shootPointerId = null;
+        mouseDown = false;
+      }
     }
-    /* 跳跃 */
-    if (pointIn(x, y, btnJump)) {
+  });
+
+  /* ---------- 跳跃按钮 ---------- */
+  bindButton(btnJump, {
+    capture: false,
+    onDown: () => {
       if (player.onGround && !gameOver) {
         player.vel.y = 6.4;
         player.onGround = false;
       }
-      btnJump.classList.add('pressed');
-      return;
     }
-    /* 换弹 */
-    if (pointIn(x, y, btnReload)) {
-      startReload();
-      btnReload.classList.add('pressed');
-      return;
-    }
-    /* 手雷 */
-    if (pointIn(x, y, btnGrenade)) {
-      throwGrenade();
-      btnGrenade.classList.add('pressed');
-      return;
-    }
-    /* 视角 */
+  });
+
+  /* ---------- 换弹按钮 ---------- */
+  bindButton(btnReload, {
+    capture: false,
+    onDown: () => startReload()
+  });
+
+  /* ---------- 手雷按钮 ---------- */
+  bindButton(btnGrenade, {
+    capture: false,
+    onDown: () => throwGrenade()
+  });
+
+  /* ---------- 视角控制：只在非 UI 元素上起手才生效 ---------- */
+  function isUIElement(el) {
+    return !!(el && el.closest && el.closest('#mobile-controls'));
+  }
+
+  window.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    if (isUIElement(e.target)) return;   // 按钮/摇杆自己处理，不参与视角
+    e.preventDefault();
     if (lookPointerId === null) {
       lookPointerId = e.pointerId;
-      lookLastX = x;
-      lookLastY = y;
-    }
-  }
-
-  function pointerMove(e) {
-    if (e.pointerType === 'mouse') return;
-
-    if (e.pointerId === joyPointerId) {
-      updateJoyVisual(e.clientX, e.clientY);
-      e.preventDefault();
-    } else if (e.pointerId === lookPointerId) {
-      const dx = e.clientX - lookLastX;
-      const dy = e.clientY - lookLastY;
       lookLastX = e.clientX;
       lookLastY = e.clientY;
-
-      player.yaw -= dx * TOUCH_LOOK_SENS;
-      player.pitch -= dy * TOUCH_LOOK_SENS;
-      const lim = Math.PI / 2 - 0.02;
-      player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
-      e.preventDefault();
     }
-  }
+  }, { passive: false, capture: true });
 
-  function pointerUp(e) {
+  window.addEventListener('pointermove', e => {
     if (e.pointerType === 'mouse') return;
+    if (e.pointerId !== lookPointerId) return;   // 严格匹配
+    e.preventDefault();
+    const dx = e.clientX - lookLastX;
+    const dy = e.clientY - lookLastY;
+    lookLastX = e.clientX;
+    lookLastY = e.clientY;
+    player.yaw -= dx * TOUCH_LOOK_SENS;
+    player.pitch -= dy * TOUCH_LOOK_SENS;
+    const lim = Math.PI / 2 - 0.02;
+    player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+  }, { passive: false, capture: true });
 
-    if (e.pointerId === joyPointerId) resetJoy();
-    if (e.pointerId === lookPointerId) lookPointerId = null;
-    if (e.pointerId === shootPointerId) {
-      shootPointerId = null;
-      mouseDown = false;
-      btnShoot.classList.remove('pressed');
-    }
-    /* 全部抬起时复位按钮样式 */
-    if (!e.pointerId) {
-      btnJump.classList.remove('pressed');
-      btnReload.classList.remove('pressed');
-      btnGrenade.classList.remove('pressed');
-    }
-  }
-
-  function pointerCancel(e) {
+  function lookRelease(e) {
     if (e.pointerType === 'mouse') return;
-    if (e.pointerId === joyPointerId) resetJoy();
     if (e.pointerId === lookPointerId) lookPointerId = null;
-    if (e.pointerId === shootPointerId) {
-      shootPointerId = null;
-      mouseDown = false;
-      btnShoot.classList.remove('pressed');
-    }
-    btnJump.classList.remove('pressed');
-    btnReload.classList.remove('pressed');
-    btnGrenade.classList.remove('pressed');
   }
+  window.addEventListener('pointerup', lookRelease, { passive: false, capture: true });
+  window.addEventListener('pointercancel', lookRelease, { passive: false, capture: true });
 
-  /* 挂到 window，capture 阶段，保证任何位置都能捕获 */
-  if (usePointer) {
-    window.addEventListener('pointerdown', pointerDown, { passive: false, capture: true });
-    window.addEventListener('pointermove', pointerMove, { passive: false, capture: true });
-    window.addEventListener('pointerup', pointerUp, { passive: false, capture: true });
-    window.addEventListener('pointercancel', pointerCancel, { passive: false, capture: true });
-  } else {
-    /* ================= 回退：touch 事件方案 ================= */
-    function touchStart(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        const x = t.clientX, y = t.clientY;
-
-        if (joyPointerId === null && pointIn(x, y, joyBase)) {
-          joyPointerId = t.identifier;
-          updateJoyVisual(x, y);
-          continue;
-        }
-        if (shootPointerId === null && pointIn(x, y, btnShoot)) {
-          shootPointerId = t.identifier;
-          mouseDown = true;
-          btnShoot.classList.add('pressed');
-          continue;
-        }
-        if (pointIn(x, y, btnJump)) {
-          if (player.onGround && !gameOver) {
-            player.vel.y = 6.4;
-            player.onGround = false;
-          }
-          btnJump.classList.add('pressed');
-          continue;
-        }
-        if (pointIn(x, y, btnReload)) {
-          startReload();
-          btnReload.classList.add('pressed');
-          continue;
-        }
-        if (pointIn(x, y, btnGrenade)) {
-          throwGrenade();
-          btnGrenade.classList.add('pressed');
-          continue;
-        }
-        if (lookPointerId === null) {
-          lookPointerId = t.identifier;
-          lookLastX = x;
-          lookLastY = y;
-        }
-      }
-    }
-    function touchMove(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (t.identifier === joyPointerId) {
-          updateJoyVisual(t.clientX, t.clientY);
-          e.preventDefault();
-        } else if (t.identifier === lookPointerId) {
-          const dx = t.clientX - lookLastX;
-          const dy = t.clientY - lookLastY;
-          lookLastX = t.clientX;
-          lookLastY = t.clientY;
-          player.yaw -= dx * TOUCH_LOOK_SENS;
-          player.pitch -= dy * TOUCH_LOOK_SENS;
-          const lim = Math.PI / 2 - 0.02;
-          player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
-          e.preventDefault();
-        }
-      }
-    }
-    function touchEnd(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (t.identifier === joyPointerId) resetJoy();
-        if (t.identifier === lookPointerId) lookPointerId = null;
-        if (t.identifier === shootPointerId) {
-          shootPointerId = null;
-          mouseDown = false;
-          btnShoot.classList.remove('pressed');
-        }
-      }
-      if (e.touches.length === 0) {
-        btnJump.classList.remove('pressed');
-        btnReload.classList.remove('pressed');
-        btnGrenade.classList.remove('pressed');
-      }
-    }
-    window.addEventListener('touchstart', touchStart, { passive: false, capture: true });
-    window.addEventListener('touchmove', touchMove, { passive: false, capture: true });
-    window.addEventListener('touchend', touchEnd, { passive: false, capture: true });
-    window.addEventListener('touchcancel', touchEnd, { passive: false, capture: true });
-  }
-
-  /* 游戏结束点击屏幕重开 */
+  /* ---------- 游戏结束点击屏幕重开 ---------- */
   gameoverEl.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse') return;
     e.preventDefault();
@@ -1535,3 +1453,31 @@ function loop() {
   }
   updatePlayerBullets(dt);
   updateEnemyBullets(dt);
+  renderer.render(scene, camera);
+}
+
+/* =========================================================
+   15. 初始化
+   ========================================================= */
+updateHpUI();
+updateAmmoUI();
+updateGrenadeUI();
+
+if (isTouch) {
+  document.getElementById('gameover-tip').textContent = '点击屏幕重新开始';
+}
+
+for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
+spawnPickup('ammo');
+spawnPickup('grenade');
+
+loop();
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
