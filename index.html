@@ -11,6 +11,7 @@
   html, body { margin: 0; padding: 0; overflow: hidden; background: #0e0e16;
     font-family: monospace; touch-action: none; overscroll-behavior: none;
     -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none; -webkit-user-drag: none;
     width: 100%; height: 100%; position: fixed; }
   canvas { display: block; touch-action: none; }
 
@@ -54,28 +55,32 @@
   #info { position: fixed; left: 26px; top: 46px; color: #667; font-family: monospace;
     font-size: 12px; pointer-events: none; line-height: 1.6; z-index: 10; }
 
-  /* ============ 手机控制（默认隐藏） ============ */
-  #mobile-controls { display: none; }
+  /* ============ 手机控制容器 ============ */
+  /* 关键：容器 pointer-events: none，不拦截任何触摸；子元素 auto 才接收 */
+  #mobile-controls {
+    display: none;
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+  }
+  body.touch-device #mobile-controls { display: block; }
+  #mobile-controls > * { pointer-events: auto; }
 
   /* 摇杆 */
   #joystick-base {
     position: fixed;
-    left: 24px;
-    bottom: 30px;
-    width: 150px;
-    height: 150px;
+    left: 24px; bottom: 30px;
+    width: 150px; height: 150px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(120,180,255,0.12) 0%, rgba(120,180,255,0.04) 70%, transparent 100%);
     border: 2px solid rgba(150,200,255,0.4);
     box-shadow: 0 0 24px rgba(100,160,255,0.22), inset 0 0 20px rgba(100,160,255,0.08);
     touch-action: none;
-    z-index: 50;
   }
   #joystick-knob {
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 66px; height: 66px;
-    border-radius: 50%;
+    position: absolute; left: 50%; top: 50%;
+    width: 66px; height: 66px; border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, rgba(180,220,255,0.85), rgba(90,140,220,0.65));
     border: 2px solid rgba(220,240,255,0.85);
     transform: translate(-50%,-50%);
@@ -83,40 +88,24 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 22px rgba(120,180,255,0.55);
   }
 
-  /* 圆形按钮 */
+  /* 按钮 */
   .ctrl-btn {
     position: fixed;
-    width: 78px; height: 78px;
-    border-radius: 50%;
+    width: 78px; height: 78px; border-radius: 50%;
     background: rgba(40,45,70,0.7);
     border: 2px solid rgba(180,200,255,0.55);
-    color: #fff;
-    font-family: monospace;
-    font-size: 14px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    touch-action: none;
-    z-index: 50;
-    text-shadow: 1px 1px 3px #000;
-    line-height: 1.15;
+    color: #fff; font-family: monospace; font-size: 14px; font-weight: bold;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    touch-action: none; text-shadow: 1px 1px 3px #000; line-height: 1.15;
     padding: 4px;
     box-shadow: 0 3px 12px rgba(0,0,0,0.45), inset 0 0 12px rgba(120,160,255,0.12);
     transition: transform .08s, background .08s;
-    -webkit-user-select: none;
-    user-select: none;
   }
-  .ctrl-btn:active, .ctrl-btn.pressed {
-    transform: scale(0.92);
-    background: rgba(90,120,200,0.75);
-  }
+  .ctrl-btn.pressed { transform: scale(0.92); background: rgba(90,120,200,0.75); }
 
   #btn-shoot {
     right: 26px; bottom: 30px;
-    width: 105px; height: 105px;
-    font-size: 18px;
+    width: 105px; height: 105px; font-size: 18px;
     background: radial-gradient(circle at 35% 30%, rgba(255,120,120,0.5), rgba(180,30,30,0.7));
     border-color: rgba(255,140,140,0.8);
     box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 26px rgba(255,80,80,0.4), inset 0 0 16px rgba(255,120,120,0.25);
@@ -128,41 +117,32 @@
     background: radial-gradient(circle at 35% 30%, rgba(150,220,255,0.35), rgba(30,90,160,0.7));
     border-color: rgba(160,220,255,0.7);
   }
-
   #btn-reload {
     right: 152px; bottom: 32px;
     background: radial-gradient(circle at 35% 30%, rgba(255,220,120,0.35), rgba(150,110,20,0.7));
     border-color: rgba(255,220,120,0.75);
   }
-
   #btn-grenade {
     right: 156px; bottom: 156px;
     background: radial-gradient(circle at 35% 30%, rgba(150,255,170,0.35), rgba(30,130,60,0.7));
     border-color: rgba(150,255,170,0.7);
   }
 
-  /* ============ 触摸设备适配（由 JS 加类触发） ============ */
-  body.touch-device #mobile-controls { display: block; }
   body.touch-device #info { display: none; }
-
   body.touch-device #hud { left: 16px; top: 16px; bottom: auto; }
   body.touch-device #hpbar-bg { width: 170px; height: 16px; }
   body.touch-device #hptext { font-size: 13px; margin-top: 4px; }
-
   body.touch-device #kills { left: 16px; top: 58px; right: auto; font-size: 13px; }
   body.touch-device #timer { left: 16px; top: 82px; font-size: 11px; }
-
   body.touch-device #ammo { right: 16px; top: 16px; bottom: auto; }
   body.touch-device #mag { font-size: 30px; }
   body.touch-device #reserve { font-size: 14px; }
   body.touch-device #reload-hint { font-size: 12px; height: 16px; }
-
   body.touch-device #grenade { right: 16px; top: 88px; bottom: auto; font-size: 14px; }
-
   body.touch-device #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
   body.touch-device #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
 
-  /* 安全区域（刘海屏/圆角） */
+  /* 安全区域 */
   body.touch-device #joystick-base {
     left: max(18px, env(safe-area-inset-left));
     bottom: max(24px, env(safe-area-inset-bottom));
@@ -184,7 +164,6 @@
     bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
   }
 
-  /* ============ 小屏竖屏（窄手机） ============ */
   @media (max-width: 400px) {
     body.touch-device #joystick-base { width: 130px; height: 130px; }
     body.touch-device #joystick-knob { width: 58px; height: 58px; }
@@ -202,7 +181,6 @@
     }
   }
 
-  /* ============ 横屏（手机横放） ============ */
   @media (orientation: landscape) and (max-height: 520px) {
     body.touch-device #joystick-base {
       width: 118px; height: 118px;
@@ -233,7 +211,6 @@
 </head>
 <body>
 
-<!-- ===== HUD ===== -->
 <div id="hud">
   <div id="hpbar-bg"><div id="hpbar"></div></div>
   <div id="hptext">HP 100%</div>
@@ -246,7 +223,6 @@
 </div>
 
 <div id="grenade">手榴弹 × 3</div>
-
 <div id="kills">击杀: 0</div>
 <div id="timer">下一波补给: 20s</div>
 
@@ -261,7 +237,6 @@
   R 换弹 · G 投掷手榴弹
 </div>
 
-<!-- ===== 手机端控制 ===== -->
 <div id="mobile-controls">
   <div id="joystick-base"><div id="joystick-knob"></div></div>
   <div id="btn-shoot" class="ctrl-btn">射击</div>
@@ -271,23 +246,17 @@
 </div>
 
 <script>
-/* ============================================================
-   ★★★ 立即执行：触摸设备检测 + 强制显示控制键 ★★★
-   （放在独立 script 里，早于 module 执行，保证第一时间生效）
-   ============================================================ */
+/* ★★★ 触摸设备检测：立即执行，保证控制键第一时间显示 ★★★ */
 (function () {
   function detectTouch() {
-    // 多条件判断，任何一个满足就算触摸设备
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
     if (window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches) return true;
     if ('ontouchstart' in window) return true;
     if (navigator.maxTouchPoints > 0) return true;
     if (navigator.msMaxTouchPoints > 0) return true;
-    // URL 参数强制手机模式：?mobile=1
     if (location.search.indexOf('mobile=1') !== -1) return true;
     return false;
   }
-
   const isTouch = detectTouch();
   window.__IS_TOUCH__ = isTouch;
 
@@ -303,8 +272,6 @@
     }
   }
   applyTouchClass();
-
-  // 保险：即使脚本时机不对，也在 load 时再补一次
   window.addEventListener('load', applyTouchClass);
 })();
 </script>
@@ -316,12 +283,8 @@
 <script type="module">
 import * as THREE from 'three';
 
-/* =========================================================
-   0. 触摸检测（复用全局标记）
-   ========================================================= */
 const isTouch = window.__IS_TOUCH__ === true;
 
-// 再补一次类名，双保险
 if (isTouch) {
   document.documentElement.classList.add('touch-device');
   document.body.classList.add('touch-device');
@@ -443,24 +406,18 @@ const matAcc   = new THREE.MeshLambertMaterial({ map: pixelTexture('#8a6a3a') })
 
 const body = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.16, 0.62), matMetal);
 body.position.set(0, 0, -0.12); gunGroup.add(body);
-
 const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.075, 0.42), matDark);
 barrel.position.set(0, 0.025, -0.6); gunGroup.add(barrel);
-
 const muzzle = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.09), matDark);
 muzzle.position.set(0, 0.025, -0.83); gunGroup.add(muzzle);
-
 const grip = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.24, 0.13), matGrip);
 grip.position.set(0, -0.18, 0.06); grip.rotation.x = 0.18; gunGroup.add(grip);
-
 const magMesh = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.28, 0.11), matAcc);
 magMesh.position.set(0, -0.2, -0.16); magMesh.rotation.x = -0.08; gunGroup.add(magMesh);
-
 const sightRear = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.05), matDark);
 sightRear.position.set(0, 0.1, 0.08); gunGroup.add(sightRear);
 const sightFront = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.03), matDark);
 sightFront.position.set(0, 0.1, -0.7); gunGroup.add(sightFront);
-
 const stock = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.13, 0.28), matGrip);
 stock.position.set(0, -0.02, 0.3); gunGroup.add(stock);
 
@@ -641,15 +598,12 @@ function buildHumanoid() {
 
   const head = new THREE.Mesh(box, skinMat);
   head.scale.set(0.34, 0.34, 0.34); head.position.set(0, 1.66, 0); g.add(head);
-
   [-0.08, 0.08].forEach(x => {
     const eye = new THREE.Mesh(box, eyeMat);
     eye.scale.set(0.07, 0.07, 0.03); eye.position.set(x, 1.70, 0.166); g.add(eye);
   });
-
   const torso = new THREE.Mesh(box, shirtMat);
   torso.scale.set(0.52, 0.72, 0.28); torso.position.set(0, 1.13, 0); g.add(torso);
-
   [-1, 1].forEach(s => {
     const arm = new THREE.Mesh(box, shirtMat);
     arm.scale.set(0.15, 0.62, 0.15); arm.position.set(0.34 * s, 1.13, 0); g.add(arm);
@@ -678,7 +632,6 @@ function spawnEnemy() {
     flashTimer: 0, walkPhase: Math.random() * 10,
   });
 }
-
 function setEnemyEmissive(e, hex) {
   e.group.traverse(o => {
     if (o.isMesh && o.material && o.material.emissive) o.material.emissive.setHex(hex);
@@ -811,8 +764,7 @@ function updateThrowAnimation(now) {
 }
 function explode(pos) {
   const light = new THREE.PointLight(0xffbb44, 22, 30, 2);
-  light.position.copy(pos);
-  scene.add(light);
+  light.position.copy(pos); scene.add(light);
   const ballMat = new THREE.MeshBasicMaterial({ color: 0xffdd66, transparent: true, opacity: 1, depthWrite: false });
   const ball = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), ballMat);
   ball.position.copy(pos); scene.add(ball);
@@ -823,9 +775,7 @@ function explode(pos) {
   for (let i = 0; i < 26; i++) {
     const s = new THREE.Mesh(
       new THREE.BoxGeometry(0.18, 0.18, 0.18),
-      new THREE.MeshBasicMaterial({
-        color: [0xffd166, 0xff8a3d, 0xffef9e][i % 3], transparent: true
-      })
+      new THREE.MeshBasicMaterial({ color: [0xffd166, 0xff8a3d, 0xffef9e][i % 3], transparent: true })
     );
     s.position.copy(pos);
     const d = new THREE.Vector3(
@@ -996,7 +946,7 @@ function resetGame() {
 }
 
 /* =========================================================
-   11. 键盘鼠标
+   11. 键盘鼠标（桌面端）
    ========================================================= */
 const keys = {};
 addEventListener('keydown', e => {
@@ -1033,33 +983,44 @@ document.addEventListener('mousemove', e => {
 });
 
 /* =========================================================
-   12. 触摸控制
+   12. 触摸控制（核心重写：用 pointer 事件统一处理）
    ========================================================= */
-const touchState = { moveInputX: 0, moveInputY: 0, lookLastX: 0, lookLastY: 0 };
-let joyTouchId = null;
-let lookTouchId = null;
-let shootTouchId = null;
+const touchState = { moveInputX: 0, moveInputY: 0 };
 
-const joyBase = document.getElementById('joystick-base');
-const joyKnob = document.getElementById('joystick-knob');
-const btnShoot   = document.getElementById('btn-shoot');
-const btnJump    = document.getElementById('btn-jump');
-const btnReload  = document.getElementById('btn-reload');
-const btnGrenade = document.getElementById('btn-grenade');
+let joyPointerId = null;
+let lookPointerId = null;
+let shootPointerId = null;
+let lookLastX = 0;
+let lookLastY = 0;
+
+const joyBase   = document.getElementById('joystick-base');
+const joyKnob   = document.getElementById('joystick-knob');
+const btnShoot  = document.getElementById('btn-shoot');
+const btnJump   = document.getElementById('btn-jump');
+const btnReload = document.getElementById('btn-reload');
+const btnGrenade= document.getElementById('btn-grenade');
 
 const TOUCH_LOOK_SENS = 0.006;
+/* 屏幕边缘保留区：避免从按钮附近起手被误判为视角拖动 */
+const EDGE_SAFE = 8;
 
-function pointIn(x, y, el) {
-  if (!el) return false;
+function getRect(el) {
+  if (!el) return null;
   const r = el.getBoundingClientRect();
+  if (r.width <= 0 || r.height <= 0) return null;
+  return r;
+}
+function pointIn(x, y, el) {
+  const r = getRect(el);
+  if (!r) return false;
   return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
 }
-
 function updateJoyVisual(tx, ty) {
-  const rect = joyBase.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const maxDist = rect.width / 2 - 33;
+  const r = getRect(joyBase);
+  if (!r) return;
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+  const maxDist = r.width / 2 - 33;
 
   let dx = tx - cx;
   let dy = ty - cy;
@@ -1072,96 +1033,214 @@ function updateJoyVisual(tx, ty) {
   touchState.moveInputX = dx / maxDist;
   touchState.moveInputY = -dy / maxDist;
 }
-
 function resetJoy() {
-  joyTouchId = null;
+  joyPointerId = null;
   touchState.moveInputX = 0;
   touchState.moveInputY = 0;
-  joyKnob.style.transform = 'translate(-50%, -50%)';
+  if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
 }
 
 if (isTouch) {
-  document.addEventListener('touchstart', e => {
-    e.preventDefault();
-    for (const t of e.changedTouches) {
-      const x = t.clientX, y = t.clientY;
+  /* ---------- 使用 pointer 事件（兼容性最好） ---------- */
+  /* 先尝试 pointer events，如果浏览器不支持，回退到 touch events */
+  const usePointer = ('onpointerdown' in window) && navigator.maxTouchPoints > 0;
 
-      if (joyTouchId === null && pointIn(x, y, joyBase)) {
-        joyTouchId = t.identifier;
-        updateJoyVisual(x, y);
-        continue;
-      }
-      if (shootTouchId === null && pointIn(x, y, btnShoot)) {
-        shootTouchId = t.identifier;
-        mouseDown = true;
-        btnShoot.classList.add('pressed');
-        continue;
-      }
-      if (pointIn(x, y, btnJump)) {
-        if (player.onGround && !gameOver) {
-          player.vel.y = 6.4;
-          player.onGround = false;
-        }
-        btnJump.classList.add('pressed');
-        continue;
-      }
-      if (pointIn(x, y, btnReload)) {
-        startReload();
-        btnReload.classList.add('pressed');
-        continue;
-      }
-      if (pointIn(x, y, btnGrenade)) {
-        throwGrenade();
-        btnGrenade.classList.add('pressed');
-        continue;
-      }
-      if (lookTouchId === null) {
-        lookTouchId = t.identifier;
-        touchState.lookLastX = x;
-        touchState.lookLastY = y;
-      }
-    }
-  }, { passive: false });
-
-  document.addEventListener('touchmove', e => {
+  /* ================= pointer 事件方案 ================= */
+  function pointerDown(e) {
+    if (e.pointerType === 'mouse') return;    // 鼠标走原来的逻辑
     e.preventDefault();
-    for (const t of e.changedTouches) {
-      if (t.identifier === joyTouchId) {
-        updateJoyVisual(t.clientX, t.clientY);
-      } else if (t.identifier === lookTouchId) {
-        const dx = t.clientX - touchState.lookLastX;
-        const dy = t.clientY - touchState.lookLastY;
-        touchState.lookLastX = t.clientX;
-        touchState.lookLastY = t.clientY;
-        player.yaw -= dx * TOUCH_LOOK_SENS;
-        player.pitch -= dy * TOUCH_LOOK_SENS;
-        const lim = Math.PI / 2 - 0.02;
-        player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
-      }
-    }
-  }, { passive: false });
 
-  function handleTouchEnd(e) {
-    e.preventDefault();
-    for (const t of e.changedTouches) {
-      if (t.identifier === joyTouchId) resetJoy();
-      if (t.identifier === shootTouchId) {
-        shootTouchId = null;
-        mouseDown = false;
-        btnShoot.classList.remove('pressed');
-      }
-      if (t.identifier === lookTouchId) lookTouchId = null;
+    const x = e.clientX;
+    const y = e.clientY;
+
+    /* 摇杆 */
+    if (joyPointerId === null && pointIn(x, y, joyBase)) {
+      joyPointerId = e.pointerId;
+      updateJoyVisual(x, y);
+      return;
     }
-    if (e.touches.length === 0) {
+    /* 射击 */
+    if (shootPointerId === null && pointIn(x, y, btnShoot)) {
+      shootPointerId = e.pointerId;
+      mouseDown = true;
+      btnShoot.classList.add('pressed');
+      return;
+    }
+    /* 跳跃 */
+    if (pointIn(x, y, btnJump)) {
+      if (player.onGround && !gameOver) {
+        player.vel.y = 6.4;
+        player.onGround = false;
+      }
+      btnJump.classList.add('pressed');
+      return;
+    }
+    /* 换弹 */
+    if (pointIn(x, y, btnReload)) {
+      startReload();
+      btnReload.classList.add('pressed');
+      return;
+    }
+    /* 手雷 */
+    if (pointIn(x, y, btnGrenade)) {
+      throwGrenade();
+      btnGrenade.classList.add('pressed');
+      return;
+    }
+    /* 视角 */
+    if (lookPointerId === null) {
+      lookPointerId = e.pointerId;
+      lookLastX = x;
+      lookLastY = y;
+    }
+  }
+
+  function pointerMove(e) {
+    if (e.pointerType === 'mouse') return;
+
+    if (e.pointerId === joyPointerId) {
+      updateJoyVisual(e.clientX, e.clientY);
+      e.preventDefault();
+    } else if (e.pointerId === lookPointerId) {
+      const dx = e.clientX - lookLastX;
+      const dy = e.clientY - lookLastY;
+      lookLastX = e.clientX;
+      lookLastY = e.clientY;
+
+      player.yaw -= dx * TOUCH_LOOK_SENS;
+      player.pitch -= dy * TOUCH_LOOK_SENS;
+      const lim = Math.PI / 2 - 0.02;
+      player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+      e.preventDefault();
+    }
+  }
+
+  function pointerUp(e) {
+    if (e.pointerType === 'mouse') return;
+
+    if (e.pointerId === joyPointerId) resetJoy();
+    if (e.pointerId === lookPointerId) lookPointerId = null;
+    if (e.pointerId === shootPointerId) {
+      shootPointerId = null;
+      mouseDown = false;
+      btnShoot.classList.remove('pressed');
+    }
+    /* 全部抬起时复位按钮样式 */
+    if (!e.pointerId) {
       btnJump.classList.remove('pressed');
       btnReload.classList.remove('pressed');
       btnGrenade.classList.remove('pressed');
     }
   }
-  document.addEventListener('touchend', handleTouchEnd, { passive: false });
-  document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
-  gameoverEl.addEventListener('touchstart', e => {
+  function pointerCancel(e) {
+    if (e.pointerType === 'mouse') return;
+    if (e.pointerId === joyPointerId) resetJoy();
+    if (e.pointerId === lookPointerId) lookPointerId = null;
+    if (e.pointerId === shootPointerId) {
+      shootPointerId = null;
+      mouseDown = false;
+      btnShoot.classList.remove('pressed');
+    }
+    btnJump.classList.remove('pressed');
+    btnReload.classList.remove('pressed');
+    btnGrenade.classList.remove('pressed');
+  }
+
+  /* 挂到 window，capture 阶段，保证任何位置都能捕获 */
+  if (usePointer) {
+    window.addEventListener('pointerdown', pointerDown, { passive: false, capture: true });
+    window.addEventListener('pointermove', pointerMove, { passive: false, capture: true });
+    window.addEventListener('pointerup', pointerUp, { passive: false, capture: true });
+    window.addEventListener('pointercancel', pointerCancel, { passive: false, capture: true });
+  } else {
+    /* ================= 回退：touch 事件方案 ================= */
+    function touchStart(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        const x = t.clientX, y = t.clientY;
+
+        if (joyPointerId === null && pointIn(x, y, joyBase)) {
+          joyPointerId = t.identifier;
+          updateJoyVisual(x, y);
+          continue;
+        }
+        if (shootPointerId === null && pointIn(x, y, btnShoot)) {
+          shootPointerId = t.identifier;
+          mouseDown = true;
+          btnShoot.classList.add('pressed');
+          continue;
+        }
+        if (pointIn(x, y, btnJump)) {
+          if (player.onGround && !gameOver) {
+            player.vel.y = 6.4;
+            player.onGround = false;
+          }
+          btnJump.classList.add('pressed');
+          continue;
+        }
+        if (pointIn(x, y, btnReload)) {
+          startReload();
+          btnReload.classList.add('pressed');
+          continue;
+        }
+        if (pointIn(x, y, btnGrenade)) {
+          throwGrenade();
+          btnGrenade.classList.add('pressed');
+          continue;
+        }
+        if (lookPointerId === null) {
+          lookPointerId = t.identifier;
+          lookLastX = x;
+          lookLastY = y;
+        }
+      }
+    }
+    function touchMove(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === joyPointerId) {
+          updateJoyVisual(t.clientX, t.clientY);
+          e.preventDefault();
+        } else if (t.identifier === lookPointerId) {
+          const dx = t.clientX - lookLastX;
+          const dy = t.clientY - lookLastY;
+          lookLastX = t.clientX;
+          lookLastY = t.clientY;
+          player.yaw -= dx * TOUCH_LOOK_SENS;
+          player.pitch -= dy * TOUCH_LOOK_SENS;
+          const lim = Math.PI / 2 - 0.02;
+          player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+          e.preventDefault();
+        }
+      }
+    }
+    function touchEnd(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === joyPointerId) resetJoy();
+        if (t.identifier === lookPointerId) lookPointerId = null;
+        if (t.identifier === shootPointerId) {
+          shootPointerId = null;
+          mouseDown = false;
+          btnShoot.classList.remove('pressed');
+        }
+      }
+      if (e.touches.length === 0) {
+        btnJump.classList.remove('pressed');
+        btnReload.classList.remove('pressed');
+        btnGrenade.classList.remove('pressed');
+      }
+    }
+    window.addEventListener('touchstart', touchStart, { passive: false, capture: true });
+    window.addEventListener('touchmove', touchMove, { passive: false, capture: true });
+    window.addEventListener('touchend', touchEnd, { passive: false, capture: true });
+    window.addEventListener('touchcancel', touchEnd, { passive: false, capture: true });
+  }
+
+  /* 游戏结束点击屏幕重开 */
+  gameoverEl.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
     e.preventDefault();
     if (gameOver) resetGame();
   }, { passive: false });
@@ -1456,31 +1535,3 @@ function loop() {
   }
   updatePlayerBullets(dt);
   updateEnemyBullets(dt);
-  renderer.render(scene, camera);
-}
-
-/* =========================================================
-   15. 初始化
-   ========================================================= */
-updateHpUI();
-updateAmmoUI();
-updateGrenadeUI();
-
-if (isTouch) {
-  document.getElementById('gameover-tip').textContent = '点击屏幕重新开始';
-}
-
-for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
-spawnPickup('ammo');
-spawnPickup('grenade');
-
-loop();
-
-addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
-</script>
-</body>
-</html>
