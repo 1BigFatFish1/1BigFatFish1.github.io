@@ -63,10 +63,11 @@
   #info { position: fixed; left: 26px; top: 46px; color: #667; font-family: monospace;
     font-size: 12px; pointer-events: none; line-height: 1.6; z-index: 10; }
 
-  /* ============ 顶部按钮 ============ */
-  #settings-btn, #rotate-btn {
+  /* ============ 设置按钮 ============ */
+  #settings-btn {
     position: fixed;
     right: 16px;
+    top: 130px;
     width: 46px; height: 46px;
     border-radius: 50%;
     background: rgba(60, 70, 100, 0.9);
@@ -83,128 +84,11 @@
     -webkit-tap-highlight-color: transparent;
     transition: transform .08s, background .08s;
   }
-  #settings-btn { top: 130px; }
-  #rotate-btn   { top: 184px; background: rgba(60, 130, 90, 0.9);
-                  border-color: rgba(150, 255, 180, 0.75); }
-  #settings-btn:active, #rotate-btn:active { transform: scale(0.9); }
-  body.touch-device #settings-btn,
-  body.touch-device #rotate-btn { display: flex; }
+  #settings-btn:active { transform: scale(0.9); }
+  body.touch-device #settings-btn { display: flex; }
   body.edit-mode #settings-btn {
     background: rgba(80, 180, 90, 0.9);
     border-color: rgba(180, 255, 200, 0.9);
-  }
-  body.touch-device.landscape #rotate-btn { display: none; }
-
-  /* ============ 竖屏提示条 ============ */
-  #rotate-tip {
-    position: fixed;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    background: rgba(40,50,80,0.92);
-    color: #fff;
-    padding: 8px 14px;
-    font-size: 12px;
-    border-radius: 0 0 12px 12px;
-    z-index: 80;
-    display: none;
-    white-space: nowrap;
-    border: 1px solid rgba(180,200,255,0.4);
-    border-top: none;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.5);
-    pointer-events: auto;
-    touch-action: none;
-  }
-  body.touch-device.portrait #rotate-tip { display: block; }
-  #rotate-tip .link {
-    color: #8fff9f;
-    text-decoration: underline;
-    margin-left: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  #rotate-tip .close {
-    color: #999;
-    margin-left: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  #rotate-tip.dismissed { display: none !important; }
-
-  /* ============ 横屏帮助浮层 ============ */
-  #orient-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.88);
-    z-index: 300;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    flex-direction: column;
-    opacity: 0;
-    transition: opacity .28s;
-    pointer-events: none;
-  }
-  #orient-overlay.show {
-    display: flex;
-    opacity: 1;
-    pointer-events: auto;
-  }
-  #orient-overlay .card {
-    background: #1a1e30;
-    border: 2px solid rgba(150, 200, 255, 0.5);
-    border-radius: 16px;
-    padding: 22px 20px;
-    max-width: 340px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.75);
-  }
-  #orient-overlay h2 {
-    color: #ffdd44;
-    font-size: 18px;
-    margin: 0 0 12px;
-    font-family: monospace;
-  }
-  #orient-overlay .step {
-    color: #fff;
-    font-size: 14px;
-    line-height: 1.7;
-    text-align: left;
-    margin: 8px 0;
-    font-family: monospace;
-  }
-  #orient-overlay .step b { color: #8fff9f; }
-  #orient-overlay .tip {
-    color: #aab;
-    font-size: 12px;
-    margin-top: 14px;
-    line-height: 1.5;
-    font-family: monospace;
-    text-align: left;
-  }
-  #orient-overlay .btn {
-    margin-top: 16px;
-    display: inline-block;
-    padding: 10px 26px;
-    background: linear-gradient(180deg, #5a7fdd, #3f5cbb);
-    color: #fff;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 14px;
-    border: 2px solid rgba(200, 220, 255, 0.55);
-    cursor: pointer;
-    font-family: monospace;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
-    user-select: none;
-    touch-action: none;
-  }
-  #orient-overlay .btn:active { transform: scale(0.96); }
-  #orient-overlay .btn-close {
-    background: rgba(80,90,120,0.6);
-    border-color: rgba(150,160,190,0.5);
-    margin-left: 8px;
   }
 
   /* ============ 编辑模式提示 ============ */
@@ -249,12 +133,6 @@
   body.edit-mode #reset-btn { display: block; }
   #reset-btn:active { transform: translateX(-50%) scale(0.95); }
 
-  body.edit-mode,
-  body.edit-mode * {
-    -webkit-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important;
-  }
   body.edit-mode #mobile-controls > *,
   body.edit-mode #settings-btn,
   body.edit-mode #reset-btn {
@@ -266,11 +144,6 @@
     outline-offset: 3px;
     animation: editPulse 1.3s ease-in-out infinite;
   }
-  body.edit-mode #mobile-controls .ctrl-btn.pressed,
-  body.edit-mode #mobile-controls .ctrl-btn:active {
-    transform: none !important;
-    background: rgba(40,45,70,0.7) !important;
-  }
   @keyframes editPulse {
     0%, 100% { filter: brightness(1); }
     50% { filter: brightness(1.5); }
@@ -280,14 +153,6 @@
     outline-offset: 4px !important;
     animation: none !important;
     filter: brightness(1.25) !important;
-  }
-
-  .ctrl-btn, #joystick-base, #joystick-knob,
-  #btn-shoot, #btn-jump, #btn-reload, #btn-grenade {
-    -webkit-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important;
-    -webkit-user-drag: none !important;
   }
 
   /* ============ 手机控制 ============ */
@@ -374,27 +239,6 @@
   body.touch-device #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
   body.touch-device #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
 
-  body.touch-device #joystick-base {
-    left: max(18px, env(safe-area-inset-left));
-    bottom: max(24px, env(safe-area-inset-bottom));
-  }
-  body.touch-device #btn-shoot {
-    right: max(20px, env(safe-area-inset-right));
-    bottom: max(24px, env(safe-area-inset-bottom));
-  }
-  body.touch-device #btn-jump {
-    right: max(24px, env(safe-area-inset-right));
-    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
-  }
-  body.touch-device #btn-reload {
-    right: calc(max(20px, env(safe-area-inset-right)) + 122px);
-    bottom: max(24px, env(safe-area-inset-bottom));
-  }
-  body.touch-device #btn-grenade {
-    right: calc(max(20px, env(safe-area-inset-right)) + 126px);
-    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
-  }
-
   @media (max-width: 400px) and (orientation: portrait) {
     body.touch-device #joystick-base { width: 130px; height: 130px; }
     body.touch-device #joystick-knob { width: 58px; height: 58px; }
@@ -432,7 +276,6 @@
 
     #edit-hint { top: 6px; font-size: 11px; padding: 6px 12px; }
     #reset-btn { top: 34px; font-size: 11px; padding: 6px 16px; }
-    #rotate-tip { display: none !important; }
 
     body.touch-device #joystick-base {
       width: 116px; height: 116px;
@@ -458,23 +301,6 @@
     body.touch-device #btn-grenade {
       right: calc(max(14px, env(safe-area-inset-right)) + 100px);
       bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
-    }
-  }
-
-  @media (orientation: landscape) and (max-height: 380px) {
-    body.touch-device #joystick-base { width: 100px; height: 100px; }
-    body.touch-device #joystick-knob { width: 44px; height: 44px; }
-    body.touch-device .ctrl-btn { width: 52px; height: 52px; font-size: 10px; }
-    body.touch-device #btn-shoot { width: 72px; height: 72px; font-size: 13px; }
-    body.touch-device #btn-jump {
-      bottom: calc(max(12px, env(safe-area-inset-bottom)) + 80px);
-    }
-    body.touch-device #btn-reload {
-      right: calc(max(12px, env(safe-area-inset-right)) + 84px);
-    }
-    body.touch-device #btn-grenade {
-      right: calc(max(12px, env(safe-area-inset-right)) + 88px);
-      bottom: calc(max(12px, env(safe-area-inset-bottom)) + 80px);
     }
   }
 </style>
@@ -511,28 +337,6 @@
 </div>
 
 <div id="settings-btn" title="设置">⚙</div>
-<div id="rotate-btn" title="一键横屏">↻</div>
-
-<div id="rotate-tip">
-  建议横屏玩，<span class="link" id="rotate-tip-link">一键横屏</span>
-  <span class="close" id="rotate-tip-close">×</span>
-</div>
-
-<div id="orient-overlay">
-  <div class="card">
-    <h2>⚠ 无法自动横屏</h2>
-    <div class="step">请按以下步骤操作：</div>
-    <div class="step"><b>1.</b> 从手机屏幕顶部<b>下拉通知栏</b></div>
-    <div class="step"><b>2.</b> 找到并打开<b>「自动旋转」</b>图标</div>
-    <div class="step"><b>3.</b> 把手机<b>横过来</b>即可</div>
-    <div class="tip">💡 部分浏览器（如 iOS Safari）不支持自动锁定横屏，需要手动操作。</div>
-    <div style="margin-top:16px;text-align:center;">
-      <span class="btn" id="orient-retry">重试</span>
-      <span class="btn btn-close" id="orient-close">知道了</span>
-    </div>
-  </div>
-</div>
-
 <div id="edit-hint">拖动按钮到合适位置，点击 ✓ 保存</div>
 <div id="reset-btn">重置位置</div>
 
@@ -591,116 +395,6 @@ if (isTouch) {
   document.body.classList.add('touch-device');
   const mc = document.getElementById('mobile-controls');
   if (mc) mc.style.display = 'block';
-}
-
-/* =========================================================
-   0. 方向检测
-   ========================================================= */
-function getRealOrientation() {
-  try {
-    if (screen.orientation && screen.orientation.type) {
-      return screen.orientation.type.indexOf('landscape') === 0 ? 'landscape' : 'portrait';
-    }
-  } catch (e) {}
-  if (typeof window.orientation === 'number') {
-    return Math.abs(window.orientation) === 90 ? 'landscape' : 'portrait';
-  }
-  return window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
-}
-
-function updateOrientationClass() {
-  if (!document.body) return;
-  try {
-    if (getRealOrientation() === 'portrait') {
-      document.body.classList.add('portrait');
-      document.body.classList.remove('landscape');
-    } else {
-      document.body.classList.add('landscape');
-      document.body.classList.remove('portrait');
-    }
-  } catch (e) {}
-}
-updateOrientationClass();
-
-async function enterLandscapeMode() {
-  const el = document.documentElement;
-  try {
-    if (!document.fullscreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.msFullscreenElement) {
-      if (el.requestFullscreen) {
-        await el.requestFullscreen({ navigationUI: 'hide' });
-      } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-      } else if (el.mozRequestFullScreen) {
-        el.mozRequestFullScreen();
-      } else if (el.msRequestFullscreen) {
-        el.msRequestFullscreen();
-      }
-    }
-  } catch (e) {}
-
-  try {
-    if (screen.orientation && typeof screen.orientation.lock === 'function') {
-      await screen.orientation.lock('landscape');
-    }
-  } catch (e) {}
-
-  setTimeout(() => {
-    try {
-      const nowLandscape = window.innerWidth > window.innerHeight;
-      updateOrientationClass();
-      handleViewportChange();
-      if (!nowLandscape) showOrientOverlay();
-    } catch (e) {}
-  }, 350);
-
-  setTimeout(() => {
-    try {
-      updateOrientationClass();
-      handleViewportChange();
-    } catch (e) {}
-  }, 700);
-}
-
-/* ============ 横屏帮助浮层 ============ */
-const orientOverlay = document.getElementById('orient-overlay');
-const orientRetry   = document.getElementById('orient-retry');
-const orientClose   = document.getElementById('orient-close');
-
-let overlayHideTimer = null;
-function showOrientOverlay() {
-  if (!orientOverlay) return;
-  orientOverlay.classList.add('show');
-  if (overlayHideTimer) clearTimeout(overlayHideTimer);
-  overlayHideTimer = setTimeout(() => hideOrientOverlay(), 8000);
-}
-function hideOrientOverlay() {
-  if (!orientOverlay) return;
-  orientOverlay.classList.remove('show');
-  if (overlayHideTimer) { clearTimeout(overlayHideTimer); overlayHideTimer = null; }
-}
-if (orientRetry) {
-  orientRetry.addEventListener('pointerdown', e => {
-    e.preventDefault(); e.stopPropagation();
-    hideOrientOverlay();
-    setTimeout(enterLandscapeMode, 100);
-  }, { passive: false });
-}
-if (orientClose) {
-  orientClose.addEventListener('pointerdown', e => {
-    e.preventDefault(); e.stopPropagation();
-    hideOrientOverlay();
-  }, { passive: false });
-}
-/* 点击浮层空白处也关闭 */
-if (orientOverlay) {
-  orientOverlay.addEventListener('pointerdown', e => {
-    if (e.target === orientOverlay) {
-      e.preventDefault();
-      hideOrientOverlay();
-    }
-  }, { passive: false });
 }
 
 /* =========================================================
@@ -1097,7 +791,7 @@ function enemyShoot(e) {
 }
 
 /* =========================================================
-   8. 手榴弹 & 爆炸
+   8. 手榴弹
    ========================================================= */
 const grenadeProjectiles = [];
 const grenadeGeo = new THREE.SphereGeometry(0.13, 8, 6);
@@ -1415,15 +1109,11 @@ const btnGrenade= document.getElementById('btn-grenade');
 
 const settingsBtn = document.getElementById('settings-btn');
 const resetBtn    = document.getElementById('reset-btn');
-const rotateBtn   = document.getElementById('rotate-btn');
-const rotateTip   = document.getElementById('rotate-tip');
-const rotateTipLink = document.getElementById('rotate-tip-link');
-const rotateTipClose = document.getElementById('rotate-tip-close');
 
 const TOUCH_LOOK_SENS = 0.006;
 
 /* =========================================================
-   12.1 按钮位置编辑
+   12.1 编辑模式（按钮位置调整）
    ========================================================= */
 let editMode = false;
 
@@ -1435,9 +1125,7 @@ const positionableElements = [
   { el: btnGrenade, name: 'grenade' },
 ];
 
-function posKey() {
-  return 'shooter_positions_v4_' + (getRealOrientation() === 'portrait' ? 'portrait' : 'landscape');
-}
+const POS_KEY = 'shooter_pos_v5';
 
 function savePositions() {
   const data = {};
@@ -1447,7 +1135,7 @@ function savePositions() {
     const top = parseFloat(el.style.top);
     if (!isNaN(left) && !isNaN(top)) data[name] = { left, top };
   });
-  try { localStorage.setItem(posKey(), JSON.stringify(data)); } catch (err) {}
+  try { localStorage.setItem(POS_KEY, JSON.stringify(data)); } catch (err) {}
 }
 
 function loadPositions() {
@@ -1459,7 +1147,7 @@ function loadPositions() {
     el.style.bottom = '';
   });
   let data = {};
-  try { data = JSON.parse(localStorage.getItem(posKey()) || '{}'); } catch (err) {}
+  try { data = JSON.parse(localStorage.getItem(POS_KEY) || '{}'); } catch (err) {}
   positionableElements.forEach(({ el, name }) => {
     if (!el) return;
     const pos = data[name];
@@ -1473,7 +1161,7 @@ function loadPositions() {
 }
 
 function clearPositions() {
-  try { localStorage.removeItem(posKey()); } catch (err) {}
+  try { localStorage.removeItem(POS_KEY); } catch (err) {}
   positionableElements.forEach(({ el }) => {
     if (!el) return;
     el.style.left = '';
@@ -1514,7 +1202,7 @@ function setupDrag(el) {
     if (!editMode) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
-    e.stopImmediatePropagation();
+    e.stopPropagation();
     clearTextSelection();
     dragging = true;
     dragPointerId = e.pointerId;
@@ -1525,12 +1213,12 @@ function setupDrag(el) {
     startTop  = parseFloat(el.style.top);
     try { el.setPointerCapture(e.pointerId); } catch (err) {}
     el.classList.add('dragging');
-  }, true);
+  });
 
   el.addEventListener('pointermove', e => {
     if (!dragging || e.pointerId !== dragPointerId) return;
     e.preventDefault();
-    e.stopImmediatePropagation();
+    e.stopPropagation();
     clearTextSelection();
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
@@ -1542,12 +1230,12 @@ function setupDrag(el) {
     nt = Math.max(0, Math.min(window.innerHeight - h, nt));
     el.style.left = nl + 'px';
     el.style.top  = nt + 'px';
-  }, true);
+  });
 
   const endDrag = e => {
     if (!dragging || e.pointerId !== dragPointerId) return;
     e.preventDefault();
-    e.stopImmediatePropagation();
+    e.stopPropagation();
     dragging = false;
     dragPointerId = null;
     el.classList.remove('dragging');
@@ -1555,8 +1243,8 @@ function setupDrag(el) {
     savePositions();
     clearTextSelection();
   };
-  el.addEventListener('pointerup', endDrag, true);
-  el.addEventListener('pointercancel', endDrag, true);
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
 }
 
 function enterEditMode() {
@@ -1615,32 +1303,8 @@ if (resetBtn) {
 
 positionableElements.forEach(({ el }) => setupDrag(el));
 
-if (rotateBtn) {
-  rotateBtn.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    e.preventDefault();
-    e.stopPropagation();
-    enterLandscapeMode();
-  }, { passive: false });
-}
-
-if (rotateTipLink) {
-  rotateTipLink.addEventListener('pointerdown', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    enterLandscapeMode();
-  }, { passive: false });
-}
-if (rotateTipClose) {
-  rotateTipClose.addEventListener('pointerdown', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (rotateTip) rotateTip.classList.add('dismissed');
-  }, { passive: false });
-}
-
 /* =========================================================
-   12.2 摇杆 / 按钮事件
+   12.2 摇杆 / 按钮交互
    ========================================================= */
 function updateJoyVisual(tx, ty) {
   const r = joyBase.getBoundingClientRect();
@@ -1667,51 +1331,13 @@ function resetJoy() {
   if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
 }
 
-function bindButton(el, { onDown, onUp, capture = true } = {}) {
-  if (!el) return;
-  el.addEventListener('pointerdown', e => {
-    if (editMode) return;
-    if (e.pointerType === 'mouse') return;
-    e.preventDefault();
-    e.stopPropagation();
-    if (capture) {
-      try { el.setPointerCapture(e.pointerId); } catch (err) {}
-    }
-    el.classList.add('pressed');
-    if (onDown) onDown(e);
-  }, { passive: false });
-  el.addEventListener('pointermove', e => {
-    if (editMode) return;
-    if (e.pointerType === 'mouse') return;
-    if (!el.hasPointerCapture || !el.hasPointerCapture(e.pointerId)) return;
-    e.preventDefault();
-    e.stopPropagation();
-  }, { passive: false });
-  const release = e => {
-    if (editMode) return;
-    if (e.pointerType === 'mouse') return;
-    e.preventDefault();
-    e.stopPropagation();
-    el.classList.remove('pressed');
-    if (onUp) onUp(e);
-  };
-  el.addEventListener('pointerup', release);
-  el.addEventListener('pointercancel', release);
-  el.addEventListener('lostpointercapture', release);
-}
-
 if (isTouch) {
-  document.addEventListener('selectstart', e => e.preventDefault(), { passive: false });
-  document.addEventListener('contextmenu', e => e.preventDefault(), { passive: false });
-  document.addEventListener('dragstart', e => e.preventDefault(), { passive: false });
+  /* 全局阻止选择 / 菜单 */
+  document.addEventListener('selectstart', e => e.preventDefault());
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('dragstart', e => e.preventDefault());
 
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', e => {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) e.preventDefault();
-    lastTouchEnd = now;
-  }, { passive: false });
-
+  /* ---------- 摇杆 ---------- */
   joyBase.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1721,6 +1347,7 @@ if (isTouch) {
     joyPointerId = e.pointerId;
     updateJoyVisual(e.clientX, e.clientY);
   }, { passive: false });
+
   joyBase.addEventListener('pointermove', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1729,6 +1356,7 @@ if (isTouch) {
     e.stopPropagation();
     updateJoyVisual(e.clientX, e.clientY);
   }, { passive: false });
+
   const joyRelease = e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1741,6 +1369,7 @@ if (isTouch) {
   joyBase.addEventListener('pointerup', joyRelease);
   joyBase.addEventListener('pointercancel', joyRelease);
 
+  /* ---------- 射击按钮（按住连发 + 滑动转向） ---------- */
   btnShoot.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1760,6 +1389,8 @@ if (isTouch) {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
     if (e.pointerId !== shootPointerId) return;
+    e.preventDefault();
+    e.stopPropagation();
     if (lookPointerId === e.pointerId) {
       const dx = e.clientX - lookLastX;
       const dy = e.clientY - lookLastY;
@@ -1786,20 +1417,40 @@ if (isTouch) {
   btnShoot.addEventListener('pointerup', shootRelease);
   btnShoot.addEventListener('pointercancel', shootRelease);
 
-  bindButton(btnJump, {
-    capture: false,
-    onDown: () => {
-      if (player.onGround && !gameOver) {
-        player.vel.y = 6.4;
-        player.onGround = false;
-      }
+  /* ---------- 跳跃 / 换弹 / 手雷 ---------- */
+  function bindSimpleButton(el, onDown) {
+    if (!el) return;
+    el.addEventListener('pointerdown', e => {
+      if (editMode) return;
+      if (e.pointerType === 'mouse') return;
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.add('pressed');
+      if (onDown) onDown();
+    }, { passive: false });
+    const release = e => {
+      if (editMode) return;
+      if (e.pointerType === 'mouse') return;
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.remove('pressed');
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+  }
+
+  bindSimpleButton(btnJump, () => {
+    if (player.onGround && !gameOver) {
+      player.vel.y = 6.4;
+      player.onGround = false;
     }
   });
-  bindButton(btnReload, { capture: false, onDown: () => startReload() });
-  bindButton(btnGrenade, { capture: false, onDown: () => throwGrenade() });
+  bindSimpleButton(btnReload, () => startReload());
+  bindSimpleButton(btnGrenade, () => throwGrenade());
 
+  /* ---------- 视角控制（画面空白区域） ---------- */
   function isUIElement(el) {
-    return !!(el && el.closest && el.closest('#mobile-controls, #settings-btn, #rotate-btn, #reset-btn, #rotate-tip, #orient-overlay'));
+    return !!(el && el.closest && el.closest('#mobile-controls, #settings-btn, #reset-btn'));
   }
 
   window.addEventListener('pointerdown', e => {
@@ -1839,6 +1490,7 @@ if (isTouch) {
   window.addEventListener('pointerup', lookRelease, { passive: false });
   window.addEventListener('pointercancel', lookRelease, { passive: false });
 
+  /* ---------- 游戏结束点击重开 ---------- */
   gameoverEl.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -2113,7 +1765,7 @@ function updatePickupSpawn(dt) {
 }
 
 /* =========================================================
-   14. 主循环（带异常保护）
+   14. 主循环
    ========================================================= */
 let last = performance.now();
 
@@ -2141,7 +1793,6 @@ function loop() {
     updateEnemyBullets(dt);
     renderer.render(scene, camera);
   } catch (e) {
-    /* 即使某一帧出错也不中断循环 */
     console.error('loop error:', e);
     last = performance.now();
     try { renderer.render(scene, camera); } catch (e2) {}
@@ -2163,13 +1814,15 @@ for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
 spawnPickup('ammo');
 spawnPickup('grenade');
 
+loadPositions();
+
 loop();
 
 /* =========================================================
-   16. 屏幕尺寸变化
+   16. 屏幕尺寸变化（简单处理，不做方向切换）
    ========================================================= */
 let resizeTimer = null;
-function handleViewportChange() {
+function handleResize() {
   try {
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -2198,34 +1851,10 @@ function handleViewportChange() {
   } catch (e) {}
 }
 
-/* 防抖处理：避免频繁触发 */
-function scheduleViewportChange() {
+addEventListener('resize', () => {
   if (resizeTimer) clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(handleViewportChange, 120);
-}
-
-function onOrientationChange() {
-  try {
-    const wasPortrait = document.body.classList.contains('portrait');
-    updateOrientationClass();
-    const nowPortrait = document.body.classList.contains('portrait');
-    if (wasPortrait !== nowPortrait && !editMode) {
-      loadPositions();
-    }
-    handleViewportChange();
-  } catch (e) {}
-}
-
-addEventListener('resize', scheduleViewportChange);
-
-/* 监听方向变化：简单可靠，不叠加多路监听 */
-addEventListener('orientationchange', () => {
-  setTimeout(onOrientationChange, 150);
-  setTimeout(onOrientationChange, 400);
+  resizeTimer = setTimeout(handleResize, 120);
 });
-
-/* 首次加载位置 */
-loadPositions();
 </script>
 </body>
 </html>
