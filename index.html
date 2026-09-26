@@ -2,44 +2,142 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>3D 第一人称像素射击 · 换弹与手榴弹</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>3D 第一人称像素射击 · 手机适配版</title>
 <style>
-  body { margin: 0; overflow: hidden; background: #0e0e16; font-family: monospace; }
-  canvas { display: block; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; overflow: hidden; background: #0e0e16; font-family: monospace;
+    touch-action: none; overscroll-behavior: none; -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent; }
+  canvas { display: block; touch-action: none; }
 
   /* ---------- HUD ---------- */
-  #hud { position: fixed; left: 22px; bottom: 22px; color: #fff; font-family: monospace; user-select: none; pointer-events: none; }
+  #hud { position: fixed; left: 22px; bottom: 22px; color: #fff; font-family: monospace; pointer-events: none; z-index: 10; }
   #hpbar-bg { width: 260px; height: 24px; background: #000a; border: 2px solid #fff6; position: relative; }
   #hpbar { width: 100%; height: 100%; background: #4ddc64; transition: width .18s, background .18s; }
   #hptext { margin-top: 6px; font-size: 16px; text-shadow: 2px 2px 0 #000; }
 
-  #ammo { position: fixed; right: 26px; bottom: 22px; color: #fff; font-family: monospace; user-select: none; pointer-events: none; text-align: right; }
+  #ammo { position: fixed; right: 26px; bottom: 22px; color: #fff; font-family: monospace; pointer-events: none; text-align: right; z-index: 10; }
   #mag { font-size: 44px; font-weight: bold; line-height: 1; text-shadow: 2px 2px 0 #000; }
   #mag.low { color: #ff5a5a; }
   #reserve { font-size: 20px; color: #cfcfcf; text-shadow: 2px 2px 0 #000; }
   #reload-hint { font-size: 14px; color: #ffd35a; margin-top: 2px; height: 18px; }
 
-  #grenade { position: fixed; right: 26px; bottom: 110px; color: #7dfa8a; font-family: monospace; font-size: 18px; user-select: none; pointer-events: none; text-shadow: 2px 2px 0 #000; }
+  #grenade { position: fixed; right: 26px; bottom: 110px; color: #7dfa8a; font-family: monospace; font-size: 18px; pointer-events: none; text-shadow: 2px 2px 0 #000; z-index: 10; }
 
-  #kills { position: fixed; right: 26px; top: 20px; color: #fff; font-family: monospace; font-size: 16px; text-shadow: 2px 2px 0 #000; user-select: none; pointer-events: none; }
-  #timer { position: fixed; left: 26px; top: 20px; color: #9ab; font-family: monospace; font-size: 14px; user-select: none; pointer-events: none; text-shadow: 2px 2px 0 #000; }
+  #kills { position: fixed; right: 26px; top: 20px; color: #fff; font-family: monospace; font-size: 16px; text-shadow: 2px 2px 0 #000; pointer-events: none; z-index: 10; }
+  #timer { position: fixed; left: 26px; top: 20px; color: #9ab; font-family: monospace; font-size: 14px; pointer-events: none; text-shadow: 2px 2px 0 #000; z-index: 10; }
 
-  #hurt { position: fixed; inset: 0; background: #f00; opacity: 0; pointer-events: none; transition: opacity .35s; }
-  #flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  #hurt { position: fixed; inset: 0; background: #f00; opacity: 0; pointer-events: none; transition: opacity .35s; z-index: 5; }
+  #flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 5; }
 
-  #crosshair { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+  #crosshair { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 8; }
   #crosshair::before, #crosshair::after { content:''; position:absolute; background:#fff8; }
   #crosshair::before { width: 20px; height: 2px; left: -10px; top: -1px; }
   #crosshair::after { width: 2px; height: 20px; left: -1px; top: -10px; }
 
-  #gameover { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; color: #ff4444; font-family: monospace; background: #000b; }
+  #gameover { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column;
+    color: #ff4444; font-family: monospace; background: #000b; z-index: 50; }
   #gameover h1 { font-size: 46px; margin: 0 0 12px; text-shadow: 3px 3px 0 #300; }
   #gameover p { color: #fff; font-size: 18px; }
 
-  #info { position: fixed; left: 26px; top: 46px; color: #667; font-family: monospace; font-size: 12px; user-select: none; pointer-events: none; line-height: 1.6; }
+  #info { position: fixed; left: 26px; top: 46px; color: #667; font-family: monospace; font-size: 12px; pointer-events: none; line-height: 1.6; z-index: 10; }
+
+  /* ---------- 手机控制（默认隐藏） ---------- */
+  #mobile-controls { display: none; }
+
+  #joystick-base {
+    position: fixed;
+    left: 26px; bottom: 30px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.28);
+    touch-action: none;
+    z-index: 40;
+  }
+  #joystick-knob {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.42);
+    border: 2px solid rgba(255,255,255,0.65);
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+    box-shadow: 0 0 14px rgba(120,180,255,0.35);
+  }
+
+  .ctrl-btn {
+    position: fixed;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: #fff;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    touch-action: none;
+    z-index: 40;
+    text-shadow: 1px 1px 2px #000;
+    line-height: 1.1;
+    padding: 4px;
+  }
+  #btn-shoot {
+    right: 30px; bottom: 30px;
+    width: 96px; height: 96px;
+    font-size: 16px;
+    background: rgba(255,80,80,0.28);
+    border-color: rgba(255,120,120,0.6);
+    box-shadow: 0 0 18px rgba(255,80,80,0.28);
+  }
+  #btn-jump { right: 30px; bottom: 138px; }
+  #btn-reload { right: 138px; bottom: 30px; }
+  #btn-grenade { right: 138px; bottom: 138px; background: rgba(120,255,140,0.15); border-color: rgba(120,255,150,0.45); }
+
+  /* ---------- 移动端 HUD 调整 ---------- */
+  @media (pointer: coarse) {
+    #mobile-controls { display: block; }
+    #info { display: none; }
+
+    #hud { left: 16px; top: 16px; bottom: auto; }
+    #hpbar-bg { width: 165px; height: 16px; }
+    #hptext { font-size: 13px; margin-top: 4px; }
+
+    #kills { left: 16px; top: 58px; right: auto; font-size: 13px; }
+    #timer { left: 16px; top: 82px; font-size: 11px; }
+
+    #ammo { right: 16px; top: 16px; bottom: auto; }
+    #mag { font-size: 30px; }
+    #reserve { font-size: 14px; }
+    #reload-hint { font-size: 12px; height: 16px; }
+
+    #grenade { right: 16px; top: 86px; bottom: auto; font-size: 14px; }
+
+    #crosshair::before { width: 26px; height: 2px; left: -13px; top: -1px; }
+    #crosshair::after { width: 2px; height: 26px; left: -1px; top: -13px; }
+  }
+
+  /* 竖屏时给按钮更紧凑的布局 */
+  @media (pointer: coarse) and (max-width: 420px) {
+    #joystick-base { left: 18px; bottom: 24px; width: 128px; height: 128px; }
+    #joystick-knob { width: 54px; height: 54px; }
+    #btn-shoot { right: 22px; bottom: 22px; width: 88px; height: 88px; }
+    #btn-jump { right: 22px; bottom: 122px; }
+    #btn-reload { right: 122px; bottom: 22px; }
+    #btn-grenade { right: 122px; bottom: 122px; }
+    .ctrl-btn { width: 66px; height: 66px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
+
+<!-- ===== HUD ===== -->
 <div id="hud">
   <div id="hpbar-bg"><div id="hpbar"></div></div>
   <div id="hptext">HP 100%</div>
@@ -60,11 +158,20 @@
 <div id="flash"></div>
 <div id="crosshair"></div>
 
-<div id="gameover"><h1>你死了</h1><p>按 R 重新开始</p></div>
+<div id="gameover"><h1>你死了</h1><p id="gameover-tip">按 R 重新开始</p></div>
 
 <div id="info">
   WASD 移动 · 鼠标看 · 左键射击 · 空格跳跃<br>
   R 换弹 · G 投掷手榴弹
+</div>
+
+<!-- ===== 手机端控制 ===== -->
+<div id="mobile-controls">
+  <div id="joystick-base"><div id="joystick-knob"></div></div>
+  <div id="btn-shoot" class="ctrl-btn">射击</div>
+  <div id="btn-jump" class="ctrl-btn">跳跃</div>
+  <div id="btn-reload" class="ctrl-btn">换弹</div>
+  <div id="btn-grenade" class="ctrl-btn">手雷</div>
 </div>
 
 <script type="importmap">
@@ -73,6 +180,13 @@
 
 <script type="module">
 import * as THREE from 'three';
+
+/* =========================================================
+   0. 触摸检测
+   ========================================================= */
+const isTouch = window.matchMedia('(pointer: coarse)').matches
+              || ('ontouchstart' in window)
+              || navigator.maxTouchPoints > 0;
 
 /* =========================================================
    1. 基础场景
@@ -184,7 +298,7 @@ const player = {
 };
 
 /* =========================================================
-   4. 枪械模型（挂在相机上）
+   4. 枪械模型
    ========================================================= */
 const gunGroup = new THREE.Group();
 
@@ -239,7 +353,7 @@ gunGroup.position.copy(GUN_REST);
 gunGroup.traverse(o => { o.frustumCulled = false; });
 camera.add(gunGroup);
 
-/* ============ 投掷手臂（挂在相机上，平时隐藏） ============ */
+/* ============ 投掷手臂 ============ */
 const throwArm = new THREE.Group();
 const skinMatArm = new THREE.MeshLambertMaterial({ map: pixelTexture('#e8c19a') });
 
@@ -388,7 +502,7 @@ function finishReload() {
 
 function tryShoot() {
   if (gameOver || weapon.reloading) return;
-  if (throwAnim.active) return;      // 投掷中不开枪
+  if (throwAnim.active) return;
   const now = performance.now() / 1000;
   if (now - weapon.lastShot < weapon.fireRate) return;
 
@@ -578,7 +692,6 @@ const grenadeProjectiles = [];
 const grenadeGeo = new THREE.SphereGeometry(0.13, 8, 6);
 const grenadeMat = new THREE.MeshLambertMaterial({ map: pixelTexture('#3f7a3a') });
 
-/* 投掷动画状态 */
 const throwAnim = {
   active: false,
   startTime: 0,
@@ -586,7 +699,6 @@ const throwAnim = {
   spawned: false,
 };
 
-/* 真正生出手榴弹飞行物（在挥臂中段调用） */
 function spawnGrenadeProjectile() {
   const start = new THREE.Vector3(0.35, -0.3, -1.0);
   camera.localToWorld(start);
@@ -610,7 +722,6 @@ function spawnGrenadeProjectile() {
   });
 }
 
-/* 触发投掷（按 G） */
 function throwGrenade() {
   if (gameOver) return;
   if (grenades <= 0) return;
@@ -628,7 +739,6 @@ function throwGrenade() {
   gunGroup.visible = false;
 }
 
-/* 更新投掷手臂动画 */
 function updateThrowAnimation(now) {
   if (!throwAnim.active) return;
 
@@ -645,7 +755,6 @@ function updateThrowAnimation(now) {
   let x, y, z, rotX;
 
   if (t < 0.4) {
-    /* 阶段1：抬手蓄力 */
     const p = t / 0.4;
     const e = 1 - Math.pow(1 - p, 2);
     x    = THREE.MathUtils.lerp(ARM_HIDDEN.x, 0.32, e);
@@ -653,7 +762,6 @@ function updateThrowAnimation(now) {
     z    = THREE.MathUtils.lerp(ARM_HIDDEN.z, -0.30, e);
     rotX = THREE.MathUtils.lerp(0.3, -0.7, e);
   } else if (t < 0.55) {
-    /* 阶段2：挥臂投出 */
     const p = (t - 0.4) / 0.15;
     const e = p * p;
     x    = THREE.MathUtils.lerp(0.32, 0.48, e);
@@ -667,7 +775,6 @@ function updateThrowAnimation(now) {
       spawnGrenadeProjectile();
     }
   } else {
-    /* 阶段3：收回手臂 */
     const p = (t - 0.55) / 0.45;
     const e = p * p;
     x    = THREE.MathUtils.lerp(0.48, ARM_HIDDEN.x, e);
@@ -680,7 +787,6 @@ function updateThrowAnimation(now) {
   throwArm.rotation.x = rotX;
 }
 
-/* ---------- 爆炸 ---------- */
 function explode(pos) {
   const light = new THREE.PointLight(0xffbb44, 22, 30, 2);
   light.position.copy(pos);
@@ -872,6 +978,7 @@ function damagePlayer(amount) {
 
 function triggerGameOver() {
   gameOver = true;
+  document.getElementById('gameover-tip').textContent = isTouch ? '点击屏幕重新开始' : '按 R 重新开始';
   gameoverEl.style.display = 'flex';
   if (document.pointerLockElement) document.exitPointerLock();
 }
@@ -914,16 +1021,20 @@ function resetGame() {
   pickups.length = 0;
 
   pickupTimer = 0;
+  touchState.moveInputX = 0;
+  touchState.moveInputY = 0;
+  if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
+  mouseDown = false;
 
   for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
   spawnPickup('ammo');
   spawnPickup('grenade');
 
-  renderer.domElement.requestPointerLock();
+  if (!isTouch) renderer.domElement.requestPointerLock();
 }
 
 /* =========================================================
-   11. 输入
+   11. 输入（键盘 / 鼠标）
    ========================================================= */
 const keys = {};
 addEventListener('keydown', e => {
@@ -939,12 +1050,18 @@ addEventListener('keyup', e => { keys[e.code] = false; });
 
 let mouseDown = false;
 renderer.domElement.addEventListener('click', () => {
-  if (!gameOver && !document.pointerLockElement) {
+  if (!gameOver && !isTouch && !document.pointerLockElement) {
     renderer.domElement.requestPointerLock();
   }
 });
-document.addEventListener('mousedown', e => { if (e.button === 0) mouseDown = true; });
-document.addEventListener('mouseup',   e => { if (e.button === 0) mouseDown = false; });
+document.addEventListener('mousedown', e => {
+  if (isTouch) return;
+  if (e.button === 0) mouseDown = true;
+});
+document.addEventListener('mouseup', e => {
+  if (isTouch) return;
+  if (e.button === 0) mouseDown = false;
+});
 addEventListener('blur', () => { mouseDown = false; });
 
 document.addEventListener('mousemove', e => {
@@ -957,7 +1074,153 @@ document.addEventListener('mousemove', e => {
 });
 
 /* =========================================================
-   12. 更新逻辑
+   12. 触摸控制
+   ========================================================= */
+const touchState = {
+  moveInputX: 0,   // -1 ~ 1
+  moveInputY: 0,   // -1 ~ 1，正 = 前
+};
+
+let joyTouchId = null;
+let lookTouchId = null;
+let shootTouchId = null;
+
+const joyBase = document.getElementById('joystick-base');
+const joyKnob = document.getElementById('joystick-knob');
+const btnShoot   = document.getElementById('btn-shoot');
+const btnJump    = document.getElementById('btn-jump');
+const btnReload  = document.getElementById('btn-reload');
+const btnGrenade = document.getElementById('btn-grenade');
+
+/* 屏幕视角拖动灵敏度（触摸） */
+const TOUCH_LOOK_SENS = 0.0055;
+
+function pointIn(x, y, el) {
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+
+function updateJoyVisual(tx, ty) {
+  const rect = joyBase.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const maxDist = rect.width / 2 - 30;   // 留出旋钮半径
+
+  let dx = tx - cx;
+  let dy = ty - cy;
+  const dist = Math.hypot(dx, dy);
+  if (dist > maxDist) {
+    dx = dx / dist * maxDist;
+    dy = dy / dist * maxDist;
+  }
+  joyKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  touchState.moveInputX = dx / maxDist;
+  touchState.moveInputY = -dy / maxDist;   // 手指上推 → 前进
+}
+
+function resetJoy() {
+  joyTouchId = null;
+  touchState.moveInputX = 0;
+  touchState.moveInputY = 0;
+  joyKnob.style.transform = 'translate(-50%, -50%)';
+}
+
+if (isTouch) {
+  /* ----- touchstart ----- */
+  document.addEventListener('touchstart', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      const x = t.clientX;
+      const y = t.clientY;
+
+      /* 摇杆区域 */
+      if (joyTouchId === null && pointIn(x, y, joyBase)) {
+        joyTouchId = t.identifier;
+        updateJoyVisual(x, y);
+        continue;
+      }
+
+      /* 射击按钮（按住） */
+      if (shootTouchId === null && pointIn(x, y, btnShoot)) {
+        shootTouchId = t.identifier;
+        mouseDown = true;
+        continue;
+      }
+
+      /* 跳跃 */
+      if (pointIn(x, y, btnJump)) {
+        if (player.onGround && !gameOver) {
+          player.vel.y = 6.4;
+          player.onGround = false;
+        }
+        continue;
+      }
+
+      /* 换弹 */
+      if (pointIn(x, y, btnReload)) {
+        startReload();
+        continue;
+      }
+
+      /* 手榴弹 */
+      if (pointIn(x, y, btnGrenade)) {
+        throwGrenade();
+        continue;
+      }
+
+      /* 视角拖动 */
+      if (lookTouchId === null) {
+        lookTouchId = t.identifier;
+        touchState.lookLastX = x;
+        touchState.lookLastY = y;
+      }
+    }
+  }, { passive: false });
+
+  /* ----- touchmove ----- */
+  document.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      if (t.identifier === joyTouchId) {
+        updateJoyVisual(t.clientX, t.clientY);
+      } else if (t.identifier === lookTouchId) {
+        const dx = t.clientX - touchState.lookLastX;
+        const dy = t.clientY - touchState.lookLastY;
+        touchState.lookLastX = t.clientX;
+        touchState.lookLastY = t.clientY;
+        player.yaw   -= dx * TOUCH_LOOK_SENS;
+        player.pitch -= dy * TOUCH_LOOK_SENS;
+        const lim = Math.PI / 2 - 0.02;
+        player.pitch = Math.max(-lim, Math.min(lim, player.pitch));
+      }
+    }
+  }, { passive: false });
+
+  /* ----- touchend / touchcancel ----- */
+  function handleTouchEnd(e) {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      if (t.identifier === joyTouchId) resetJoy();
+      if (t.identifier === shootTouchId) {
+        shootTouchId = null;
+        mouseDown = false;
+      }
+      if (t.identifier === lookTouchId) lookTouchId = null;
+    }
+  }
+  document.addEventListener('touchend', handleTouchEnd, { passive: false });
+  document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+  /* 游戏结束时点击屏幕重开 */
+  gameoverEl.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (gameOver) resetGame();
+  }, { passive: false });
+}
+
+/* =========================================================
+   13. 更新逻辑
    ========================================================= */
 let recoil = 0;
 const PLAYER_R = 0.42;
@@ -997,6 +1260,12 @@ function updatePlayer(dt, now) {
   if (keys['KeyD'] || keys['ArrowRight']) move.add(right);
   if (keys['KeyA'] || keys['ArrowLeft'])  move.sub(right);
 
+  /* 触摸摇杆输入 */
+  if (Math.abs(touchState.moveInputX) > 0.05 || Math.abs(touchState.moveInputY) > 0.05) {
+    move.addScaledVector(right,   touchState.moveInputX);
+    move.addScaledVector(forward, touchState.moveInputY);
+  }
+
   const isMoving = move.lengthSq() > 0;
   if (isMoving) move.normalize().multiplyScalar(speed * dt);
 
@@ -1023,7 +1292,6 @@ function updatePlayer(dt, now) {
   camera.rotateY(player.yaw);
   camera.rotateX(player.pitch);
 
-  /* 枪械动画 */
   recoil *= Math.pow(0.0008, dt);
 
   let gunY = GUN_REST.y + recoil * 0.55;
@@ -1283,7 +1551,7 @@ function updatePickupSpawn(dt) {
 }
 
 /* =========================================================
-   13. 主循环
+   14. 主循环
    ========================================================= */
 let last = performance.now();
 
@@ -1314,11 +1582,16 @@ function loop() {
 }
 
 /* =========================================================
-   14. 初始化
+   15. 初始化
    ========================================================= */
 updateHpUI();
 updateAmmoUI();
 updateGrenadeUI();
+
+/* 手机提示文字 */
+if (isTouch) {
+  document.getElementById('gameover-tip').textContent = '点击屏幕重新开始';
+}
 
 for (let i = 0; i < MAX_ENEMIES; i++) spawnEnemy();
 spawnPickup('ammo');
