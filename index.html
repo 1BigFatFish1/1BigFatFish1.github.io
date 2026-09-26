@@ -547,8 +547,10 @@
 <script>
 (function () {
   function detectTouch() {
-    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
-    if (window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches) return true;
+    try {
+      if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
+      if (window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches) return true;
+    } catch (e) {}
     if ('ontouchstart' in window) return true;
     if (navigator.maxTouchPoints > 0) return true;
     if (navigator.msMaxTouchPoints > 0) return true;
@@ -560,14 +562,16 @@
 
   function applyTouchClass() {
     if (!isTouch) return;
-    document.documentElement.classList.add('touch-device');
-    if (document.body) {
-      document.body.classList.add('touch-device');
-      const mc = document.getElementById('mobile-controls');
-      if (mc) mc.style.display = 'block';
-    } else {
-      document.addEventListener('DOMContentLoaded', applyTouchClass, { once: true });
-    }
+    try {
+      document.documentElement.classList.add('touch-device');
+      if (document.body) {
+        document.body.classList.add('touch-device');
+        const mc = document.getElementById('mobile-controls');
+        if (mc) mc.style.display = 'block';
+      } else {
+        document.addEventListener('DOMContentLoaded', applyTouchClass, { once: true });
+      }
+    } catch (e) {}
   }
   applyTouchClass();
   window.addEventListener('load', applyTouchClass);
@@ -590,12 +594,14 @@ if (isTouch) {
 }
 
 /* =========================================================
-   0. 方向检测 & 横屏
+   0. 方向检测
    ========================================================= */
 function getRealOrientation() {
-  if (screen.orientation && screen.orientation.type) {
-    return screen.orientation.type.indexOf('landscape') === 0 ? 'landscape' : 'portrait';
-  }
+  try {
+    if (screen.orientation && screen.orientation.type) {
+      return screen.orientation.type.indexOf('landscape') === 0 ? 'landscape' : 'portrait';
+    }
+  } catch (e) {}
   if (typeof window.orientation === 'number') {
     return Math.abs(window.orientation) === 90 ? 'landscape' : 'portrait';
   }
@@ -604,65 +610,56 @@ function getRealOrientation() {
 
 function updateOrientationClass() {
   if (!document.body) return;
-  if (getRealOrientation() === 'portrait') {
-    document.body.classList.add('portrait');
-    document.body.classList.remove('landscape');
-  } else {
-    document.body.classList.add('landscape');
-    document.body.classList.remove('portrait');
-  }
+  try {
+    if (getRealOrientation() === 'portrait') {
+      document.body.classList.add('portrait');
+      document.body.classList.remove('landscape');
+    } else {
+      document.body.classList.add('landscape');
+      document.body.classList.remove('portrait');
+    }
+  } catch (e) {}
 }
 updateOrientationClass();
 
 async function enterLandscapeMode() {
   const el = document.documentElement;
-
-  /* 1. 尝试全屏 */
-  let fullscreenOk = false;
   try {
     if (!document.fullscreenElement &&
         !document.webkitFullscreenElement &&
         !document.msFullscreenElement) {
       if (el.requestFullscreen) {
         await el.requestFullscreen({ navigationUI: 'hide' });
-        fullscreenOk = true;
       } else if (el.webkitRequestFullscreen) {
         el.webkitRequestFullscreen();
-        fullscreenOk = true;
       } else if (el.mozRequestFullScreen) {
         el.mozRequestFullScreen();
-        fullscreenOk = true;
       } else if (el.msRequestFullscreen) {
         el.msRequestFullscreen();
-        fullscreenOk = true;
       }
-    } else {
-      fullscreenOk = true;
     }
   } catch (e) {}
 
-  /* 2. 尝试锁定横屏 */
-  let lockOk = false;
   try {
     if (screen.orientation && typeof screen.orientation.lock === 'function') {
       await screen.orientation.lock('landscape');
-      lockOk = true;
     }
   } catch (e) {}
 
-  /* 3. 延迟检查是否成功 */
   setTimeout(() => {
-    const nowLandscape = window.innerWidth > window.innerHeight;
-    updateOrientationClass();
-    handleViewportChange();
-    if (!nowLandscape) {
-      showOrientOverlay();
-    }
+    try {
+      const nowLandscape = window.innerWidth > window.innerHeight;
+      updateOrientationClass();
+      handleViewportChange();
+      if (!nowLandscape) showOrientOverlay();
+    } catch (e) {}
   }, 350);
 
   setTimeout(() => {
-    updateOrientationClass();
-    handleViewportChange();
+    try {
+      updateOrientationClass();
+      handleViewportChange();
+    } catch (e) {}
   }, 700);
 }
 
@@ -676,7 +673,6 @@ function showOrientOverlay() {
   if (!orientOverlay) return;
   orientOverlay.classList.add('show');
   if (overlayHideTimer) clearTimeout(overlayHideTimer);
-  /* 8 秒后自动消失 */
   overlayHideTimer = setTimeout(() => hideOrientOverlay(), 8000);
 }
 function hideOrientOverlay() {
@@ -695,6 +691,15 @@ if (orientClose) {
   orientClose.addEventListener('pointerdown', e => {
     e.preventDefault(); e.stopPropagation();
     hideOrientOverlay();
+  }, { passive: false });
+}
+/* 点击浮层空白处也关闭 */
+if (orientOverlay) {
+  orientOverlay.addEventListener('pointerdown', e => {
+    if (e.target === orientOverlay) {
+      e.preventDefault();
+      hideOrientOverlay();
+    }
   }, { passive: false });
 }
 
@@ -1431,7 +1436,7 @@ const positionableElements = [
 ];
 
 function posKey() {
-  return 'shooter_positions_v3_' + (getRealOrientation() === 'portrait' ? 'portrait' : 'landscape');
+  return 'shooter_positions_v4_' + (getRealOrientation() === 'portrait' ? 'portrait' : 'landscape');
 }
 
 function savePositions() {
@@ -1487,13 +1492,15 @@ function toLeftTop(el) {
 }
 
 function clearTextSelection() {
-  if (window.getSelection) {
-    const sel = window.getSelection();
-    if (sel && sel.removeAllRanges) sel.removeAllRanges();
-  }
-  if (document.selection && document.selection.empty) {
-    try { document.selection.empty(); } catch (err) {}
-  }
+  try {
+    if (window.getSelection) {
+      const sel = window.getSelection();
+      if (sel && sel.removeAllRanges) sel.removeAllRanges();
+    }
+    if (document.selection && document.selection.empty) {
+      document.selection.empty();
+    }
+  } catch (e) {}
 }
 
 function setupDrag(el) {
@@ -2106,31 +2113,39 @@ function updatePickupSpawn(dt) {
 }
 
 /* =========================================================
-   14. 主循环
+   14. 主循环（带异常保护）
    ========================================================= */
 let last = performance.now();
 
 function loop() {
   requestAnimationFrame(loop);
-  const nowMs = performance.now();
-  let dt = (nowMs - last) / 1000;
-  last = nowMs;
-  dt = Math.min(dt, 0.05);
-  const now = nowMs / 1000;
 
-  if (!gameOver && !editMode) {
-    updatePlayer(dt, now);
-    updateEnemies(dt, now);
-    updateGrenades(dt, now);
-    updatePickups(dt, now);
-    updatePickupSpawn(dt);
-    updateThrowAnimation(now);
-    if (mouseDown) tryShoot();
+  try {
+    const nowMs = performance.now();
+    let dt = (nowMs - last) / 1000;
+    last = nowMs;
+    dt = Math.min(dt, 0.05);
+    const now = nowMs / 1000;
+
+    if (!gameOver && !editMode) {
+      updatePlayer(dt, now);
+      updateEnemies(dt, now);
+      updateGrenades(dt, now);
+      updatePickups(dt, now);
+      updatePickupSpawn(dt);
+      updateThrowAnimation(now);
+      if (mouseDown) tryShoot();
+    }
+
+    updatePlayerBullets(dt);
+    updateEnemyBullets(dt);
+    renderer.render(scene, camera);
+  } catch (e) {
+    /* 即使某一帧出错也不中断循环 */
+    console.error('loop error:', e);
+    last = performance.now();
+    try { renderer.render(scene, camera); } catch (e2) {}
   }
-
-  updatePlayerBullets(dt);
-  updateEnemyBullets(dt);
-  renderer.render(scene, camera);
 }
 
 /* =========================================================
@@ -2151,70 +2166,65 @@ spawnPickup('grenade');
 loop();
 
 /* =========================================================
-   16. 屏幕尺寸 / 横竖屏切换
+   16. 屏幕尺寸变化
    ========================================================= */
+let resizeTimer = null;
 function handleViewportChange() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  try {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
 
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
 
-  positionableElements.forEach(({ el }) => {
-    if (!el) return;
-    const left = parseFloat(el.style.left);
-    const top  = parseFloat(el.style.top);
-    if (isNaN(left) || isNaN(top)) return;
-    const r = el.getBoundingClientRect();
-    const w2 = r.width, h2 = r.height;
-    const nl = Math.max(0, Math.min(w - w2, left));
-    const nt = Math.max(0, Math.min(h - h2, top));
-    if (nl !== left) el.style.left = nl + 'px';
-    if (nt !== top)  el.style.top  = nt + 'px';
-  });
+    positionableElements.forEach(({ el }) => {
+      if (!el) return;
+      const left = parseFloat(el.style.left);
+      const top  = parseFloat(el.style.top);
+      if (isNaN(left) || isNaN(top)) return;
+      const r = el.getBoundingClientRect();
+      const w2 = r.width, h2 = r.height;
+      const nl = Math.max(0, Math.min(w - w2, left));
+      const nt = Math.max(0, Math.min(h - h2, top));
+      if (nl !== left) el.style.left = nl + 'px';
+      if (nt !== top)  el.style.top  = nt + 'px';
+    });
 
-  if (joyKnob && joyPointerId === null) {
-    joyKnob.style.transform = 'translate(-50%, -50%)';
-  }
+    if (joyKnob && joyPointerId === null) {
+      joyKnob.style.transform = 'translate(-50%, -50%)';
+    }
+  } catch (e) {}
+}
+
+/* 防抖处理：避免频繁触发 */
+function scheduleViewportChange() {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(handleViewportChange, 120);
 }
 
 function onOrientationChange() {
-  const wasPortrait = document.body.classList.contains('portrait');
-
-  updateOrientationClass();
-
-  const nowPortrait = document.body.classList.contains('portrait');
-  if (wasPortrait !== nowPortrait && !editMode) {
-    loadPositions();
-  }
-
-  handleViewportChange();
+  try {
+    const wasPortrait = document.body.classList.contains('portrait');
+    updateOrientationClass();
+    const nowPortrait = document.body.classList.contains('portrait');
+    if (wasPortrait !== nowPortrait && !editMode) {
+      loadPositions();
+    }
+    handleViewportChange();
+  } catch (e) {}
 }
 
-addEventListener('resize', handleViewportChange);
+addEventListener('resize', scheduleViewportChange);
 
-/* 优先使用 screen.orientation 的变化事件 */
-if (screen.orientation && typeof screen.orientation.addEventListener === 'function') {
-  screen.orientation.addEventListener('change', () => {
-    setTimeout(onOrientationChange, 80);
-    setTimeout(onOrientationChange, 220);
-  });
-} else if (typeof window.orientation !== 'undefined') {
-  addEventListener('orientationchange', () => {
-    setTimeout(onOrientationChange, 120);
-    setTimeout(onOrientationChange, 320);
-    setTimeout(onOrientationChange, 600);
-  });
-}
+/* 监听方向变化：简单可靠，不叠加多路监听 */
+addEventListener('orientationchange', () => {
+  setTimeout(onOrientationChange, 150);
+  setTimeout(onOrientationChange, 400);
+});
 
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    setTimeout(handleViewportChange, 60);
-  });
-}
-
+/* 首次加载位置 */
 loadPositions();
 </script>
 </body>
