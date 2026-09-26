@@ -260,7 +260,7 @@
     bottom: calc(max(24px, env(safe-area-inset-bottom)) + 122px);
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 400px) and (orientation: portrait) {
     body.touch-device #joystick-base { width: 130px; height: 130px; }
     body.touch-device #joystick-knob { width: 58px; height: 58px; }
     body.touch-device #btn-shoot { width: 92px; height: 92px; font-size: 16px; }
@@ -277,30 +277,88 @@
     }
   }
 
-  @media (orientation: landscape) and (max-height: 520px) {
+  /* ============================================================
+     ★★★ 横屏适配（核心改动） ★★★
+     手机横屏时，屏幕高度通常只有 360~450px，因此：
+     1. 按钮缩小
+     2. HUD 更紧凑
+     3. 设置按钮移到右上角
+     4. 摇杆 / 按钮贴近底部边缘
+     ============================================================ */
+  @media (orientation: landscape) {
+    /* --- HUD 紧凑 --- */
+    body.touch-device #hud { left: 12px; top: 10px; bottom: auto; }
+    body.touch-device #hpbar-bg { width: 130px; height: 12px; }
+    body.touch-device #hptext { font-size: 11px; margin-top: 2px; }
+
+    body.touch-device #kills { left: 12px; top: 44px; right: auto; font-size: 11px; }
+    body.touch-device #timer { left: 12px; top: 62px; font-size: 10px; }
+
+    body.touch-device #ammo { right: 12px; top: 10px; bottom: auto; }
+    body.touch-device #mag { font-size: 22px; }
+    body.touch-device #reserve { font-size: 12px; }
+    body.touch-device #reload-hint { font-size: 10px; height: 14px; margin-top: 0; }
+
+    body.touch-device #grenade { right: 12px; top: 62px; bottom: auto; font-size: 11px; }
+
+    /* --- 设置按钮放到最右上 --- */
+    body.touch-device #settings-btn {
+      right: max(10px, env(safe-area-inset-right));
+      top: max(10px, env(safe-area-inset-top));
+      width: 38px;
+      height: 38px;
+      font-size: 18px;
+    }
+
+    /* --- 编辑模式提示 --- */
+    #edit-hint { top: 8px; font-size: 11px; padding: 6px 12px; }
+    #reset-btn { top: 40px; font-size: 11px; padding: 6px 16px; }
+
+    /* --- 摇杆：紧凑版，贴左下 --- */
     body.touch-device #joystick-base {
-      width: 118px; height: 118px;
-      left: max(16px, env(safe-area-inset-left));
-      bottom: max(16px, env(safe-area-inset-bottom));
+      width: 116px; height: 116px;
+      left: max(14px, env(safe-area-inset-left));
+      bottom: max(14px, env(safe-area-inset-bottom));
     }
-    body.touch-device #joystick-knob { width: 52px; height: 52px; }
+    body.touch-device #joystick-knob { width: 50px; height: 50px; }
+
+    /* --- 按钮：紧凑版，贴右下 --- */
+    body.touch-device .ctrl-btn { width: 58px; height: 58px; font-size: 11px; }
+
     body.touch-device #btn-shoot {
-      width: 84px; height: 84px; font-size: 15px;
-      right: max(16px, env(safe-area-inset-right));
-      bottom: max(16px, env(safe-area-inset-bottom));
+      width: 82px; height: 82px; font-size: 14px;
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(14px, env(safe-area-inset-bottom));
     }
-    body.touch-device .ctrl-btn { width: 62px; height: 62px; font-size: 11px; }
     body.touch-device #btn-jump {
-      right: max(18px, env(safe-area-inset-right));
-      bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px);
+      right: max(16px, env(safe-area-inset-right));
+      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
     }
     body.touch-device #btn-reload {
-      right: calc(max(16px, env(safe-area-inset-right)) + 100px);
-      bottom: max(16px, env(safe-area-inset-bottom));
+      right: calc(max(14px, env(safe-area-inset-right)) + 96px);
+      bottom: max(14px, env(safe-area-inset-bottom));
     }
     body.touch-device #btn-grenade {
-      right: calc(max(16px, env(safe-area-inset-right)) + 104px);
-      bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px);
+      right: calc(max(14px, env(safe-area-inset-right)) + 100px);
+      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 92px);
+    }
+  }
+
+  /* 横屏超矮屏（如 iPhone SE 横放 320px 高）进一步压缩 */
+  @media (orientation: landscape) and (max-height: 380px) {
+    body.touch-device #joystick-base { width: 100px; height: 100px; }
+    body.touch-device #joystick-knob { width: 44px; height: 44px; }
+    body.touch-device .ctrl-btn { width: 52px; height: 52px; font-size: 10px; }
+    body.touch-device #btn-shoot { width: 72px; height: 72px; font-size: 13px; }
+    body.touch-device #btn-jump {
+      bottom: calc(max(12px, env(safe-area-inset-bottom)) + 80px);
+    }
+    body.touch-device #btn-reload {
+      right: calc(max(12px, env(safe-area-inset-right)) + 84px);
+    }
+    body.touch-device #btn-grenade {
+      right: calc(max(12px, env(safe-area-inset-right)) + 88px);
+      bottom: calc(max(12px, env(safe-area-inset-bottom)) + 80px);
     }
   }
 </style>
@@ -336,7 +394,6 @@
   R 换弹 · G 投掷手榴弹
 </div>
 
-<!-- 设置按钮 -->
 <div id="settings-btn" title="设置">⚙</div>
 <div id="edit-hint">拖动按钮到合适位置，点击 ✓ 保存</div>
 <div id="reset-btn">重置位置</div>
@@ -1115,7 +1172,6 @@ const TOUCH_LOOK_SENS = 0.006;
 const POS_KEY = 'shooter_button_positions_v2';
 let editMode = false;
 
-// 可拖动元素（name 用于存储）
 const positionableElements = [
   { el: joyBase,    name: 'joystick' },
   { el: btnShoot,   name: 'shoot' },
@@ -1171,7 +1227,6 @@ function toLeftTop(el) {
   el.style.bottom = 'auto';
 }
 
-/* 拖拽实现 */
 function setupDrag(el) {
   if (!el) return;
   let dragging = false;
@@ -1238,7 +1293,6 @@ function enterEditMode() {
   settingsBtn.textContent = '✓';
   settingsBtn.title = '完成';
 
-  // 暂停进行中的触摸动作
   mouseDown = false;
   lookPointerId = null;
   shootPointerId = null;
@@ -1259,7 +1313,6 @@ function exitEditMode() {
   savePositions();
 }
 
-/* 设置按钮点击 */
 if (settingsBtn) {
   settingsBtn.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1270,7 +1323,6 @@ if (settingsBtn) {
   }, { passive: false });
 }
 
-/* 重置按钮点击 */
 if (resetBtn) {
   resetBtn.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1278,7 +1330,6 @@ if (resetBtn) {
     e.stopPropagation();
     clearPositions();
     if (editMode) {
-      // 仍在编辑模式，重新应用 left/top
       positionableElements.forEach(({ el }) => {
         if (!el) return;
         el.style.left = '';
@@ -1286,7 +1337,6 @@ if (resetBtn) {
         el.style.right = '';
         el.style.bottom = '';
       });
-      // 下一帧再转 left/top（等浏览器应用 CSS 默认值）
       requestAnimationFrame(() => {
         positionableElements.forEach(({ el }) => {
           if (!el) return;
@@ -1297,10 +1347,7 @@ if (resetBtn) {
   }, { passive: false });
 }
 
-/* 初始化拖拽 */
 positionableElements.forEach(({ el }) => setupDrag(el));
-
-/* 加载已保存位置 */
 loadPositions();
 
 /* =========================================================
@@ -1311,7 +1358,7 @@ function updateJoyVisual(tx, ty) {
   if (!r.width || !r.height) return;
   const cx = r.left + r.width / 2;
   const cy = r.top + r.height / 2;
-  const maxDist = r.width / 2 - 33;
+  const maxDist = r.width / 2 - 28;
 
   let dx = tx - cx;
   let dy = ty - cy;
@@ -1331,7 +1378,6 @@ function resetJoy() {
   if (joyKnob) joyKnob.style.transform = 'translate(-50%, -50%)';
 }
 
-/* 通用按钮绑定 */
 function bindButton(el, { onDown, onUp, capture = true } = {}) {
   if (!el) return;
   el.addEventListener('pointerdown', e => {
@@ -1443,7 +1489,6 @@ if (isTouch) {
   btnShoot.addEventListener('pointerup', shootRelease);
   btnShoot.addEventListener('pointercancel', shootRelease);
 
-  /* ---------- 跳跃 / 换弹 / 手雷 ---------- */
   bindButton(btnJump, {
     capture: false,
     onDown: () => {
@@ -1462,7 +1507,6 @@ if (isTouch) {
     onDown: () => throwGrenade()
   });
 
-  /* ---------- 视角控制（画面空白区域起手） ---------- */
   function isUIElement(el) {
     return !!(el && el.closest && el.closest('#mobile-controls, #settings-btn, #reset-btn'));
   }
@@ -1504,7 +1548,6 @@ if (isTouch) {
   window.addEventListener('pointerup', lookRelease, { passive: false });
   window.addEventListener('pointercancel', lookRelease, { passive: false });
 
-  /* ---------- 游戏结束点击屏幕重开 ---------- */
   gameoverEl.addEventListener('pointerdown', e => {
     if (editMode) return;
     if (e.pointerType === 'mouse') return;
@@ -1799,8 +1842,6 @@ function loop() {
     updatePickupSpawn(dt);
     updateThrowAnimation(now);
     if (mouseDown) tryShoot();
-  } else if (!gameOver && editMode) {
-    // 编辑模式下不推进游戏世界，但保持渲染
   }
 
   updatePlayerBullets(dt);
@@ -1825,25 +1866,53 @@ spawnPickup('grenade');
 
 loop();
 
-addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+/* =========================================================
+   16. 屏幕尺寸变化 / 横竖屏切换
+   ========================================================= */
+function handleViewportChange() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
 
-  // 屏幕尺寸变化时，重新约束按钮位置
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
+
+  // 重新约束按钮不超出屏幕
   positionableElements.forEach(({ el }) => {
     if (!el) return;
     const left = parseFloat(el.style.left);
     const top  = parseFloat(el.style.top);
     if (isNaN(left) || isNaN(top)) return;
     const r = el.getBoundingClientRect();
-    const w = r.width, h = r.height;
-    const nl = Math.max(0, Math.min(window.innerWidth  - w, left));
-    const nt = Math.max(0, Math.min(window.innerHeight - h, top));
+    const w2 = r.width, h2 = r.height;
+    const nl = Math.max(0, Math.min(w - w2, left));
+    const nt = Math.max(0, Math.min(h - h2, top));
     if (nl !== left) el.style.left = nl + 'px';
     if (nt !== top)  el.style.top  = nt + 'px';
   });
+
+  // 分辨率变化后重置摇杆视觉
+  if (joyKnob) {
+    if (joyPointerId === null) {
+      joyKnob.style.transform = 'translate(-50%, -50%)';
+    }
+  }
+}
+
+addEventListener('resize', handleViewportChange);
+addEventListener('orientationchange', () => {
+  // iOS 需要在 orientationchange 后延迟读取尺寸
+  setTimeout(handleViewportChange, 120);
+  setTimeout(handleViewportChange, 320);
 });
+
+// 视觉视口变化（如地址栏收起/展开）
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    setTimeout(handleViewportChange, 60);
+  });
+}
 </script>
 </body>
 </html>
